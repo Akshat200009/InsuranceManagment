@@ -53,5 +53,12 @@ public class CustomerController {
     	
     	return ResponseEntity.ok("Customer Deleted Successfully");
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<CustomerResponse>> searchCustomer (String name)
+    {
+    	List<CustomerResponse> customer=customerService.searchCustomer(name);
+    	
+    	return ResponseEntity.ok(customer);
+    }
 
 }

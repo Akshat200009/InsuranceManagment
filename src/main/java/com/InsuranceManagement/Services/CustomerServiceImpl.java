@@ -1,11 +1,8 @@
 package com.InsuranceManagement.Services;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.InsuranceManagement.DTO.CustomerRequest;
 import com.InsuranceManagement.DTO.CustomerResponse;
@@ -96,5 +93,19 @@ public class CustomerServiceImpl implements CustomerService {
 	    customerRepository.delete(customer);
 			                                                 
 		
+	}
+
+	@Override
+	public List<CustomerResponse> searchCustomer(@RequestParam String name) {
+		
+		List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(name);
+		
+      return customers.stream().map(this::convertToResponse).toList();
+	}
+
+	@Override
+	public CustomerResponse CustomerHistory(Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
