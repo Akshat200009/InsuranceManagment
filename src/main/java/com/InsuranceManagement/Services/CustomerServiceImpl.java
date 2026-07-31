@@ -3,6 +3,8 @@ package com.InsuranceManagement.Services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
 
 import com.InsuranceManagement.DTO.CustomerRequest;
@@ -59,25 +61,40 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public List<CustomerResponse> getAllCustomers() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Customer> customers = customerRepository.findAll();
+		return customers.stream().map(this::convertToResponse).toList();
 	}
 
 	@Override
-	public CustomerResponse getCustomerById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public CustomerResponse getCustomerById(Long id) { 
+	   Customer customer = customerRepository.findById(id)
+			   .orElseThrow(()-> new RuntimeException("Customer not found wih ID: "+id));
+		return convertToResponse(customer);
 	}
 
 	@Override
 	public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		 Customer customer = customerRepository.findById(id)
+				 .orElseThrow(()-> new RuntimeException("Customer not found with id : "+ id));
+		 
+		 customer.setName(request.getName());
+		 customer.setEmail(request.getEmail());
+		 customer.setPhone(request.getPhone());
+		 customer.setDob(request.getDob());
+		 customer.setAddress(request.getAddress());
+		 
+		 Customer updatedCustomer = customerRepository.save(customer);
+		return convertToResponse(updatedCustomer);
 	}
 
 	@Override
 	public void deleteCustomer(Long id) {
-		// TODO Auto-generated method stub
+		
+		Customer customer = customerRepository.findById(id)
+				.orElseThrow(()-> new RuntimeException("Customer Not Found with id: " + id));
+		 
+	    customerRepository.delete(customer);
+			                                                 
 		
 	}
 }
