@@ -12,6 +12,7 @@ import com.InsuranceManagement.DTO.PolicyRequest;
 import com.InsuranceManagement.DTO.PolicyResponse;
 import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Entities.Policy;
+import com.InsuranceManagement.Entities.PolicyStatus;
 import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.PolicyRepository;
 
@@ -68,7 +69,7 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public List<PolicyResponse> getActivePolicies() {
-		List<Policy> policies = policyRepository.findByStatus("ACTIVE");
+		List<Policy> policies = policyRepository.findByStatus(PolicyStatus.ACTIVE);
 		return policies.stream().map(this::convertToResponse).toList();
 		 
 	}
@@ -91,7 +92,8 @@ public class PolicyServiceImpl implements PolicyService {
 	public PolicyResponse cancelPolicy(Long PolicyId) {
 		 Policy policy = policyRepository.findById(PolicyId)
 				 .orElseThrow(()-> new RuntimeException("Policy Not Found"));
-		 policy.setStatus("CANCELLED");
+		 
+		 policy.setStatus(PolicyStatus.CANCELLED);
 		 
 		 Policy cancel = policyRepository.save(policy);
 		 
@@ -104,6 +106,17 @@ public class PolicyServiceImpl implements PolicyService {
 		List<Policy> policy = policyRepository.findByEndDateBefore(LocalDate.now());
 		
 		return policy.stream().map(this::convertToResponse).toList();
+	}
+
+	@Override
+	public List<PolicyResponse> getPoliciesByStatus(PolicyStatus status) {
+
+	    List<Policy> policies =
+	            policyRepository.findByStatus(status);
+
+	    return policies.stream()
+	            .map(this::convertToResponse)
+	            .toList();
 	}
 
 }

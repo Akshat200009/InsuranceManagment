@@ -1,6 +1,10 @@
 package com.InsuranceManagement.Services;
 
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -107,5 +111,38 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerResponse CustomerHistory(Long id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<CustomerResponse> searchCustomerByName(String name) {
+
+	    List<Customer> customers =
+	            customerRepository.findByNameContainingIgnoreCase(name);
+
+	    return customers.stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
+
+	@Override
+	public List<CustomerResponse> searchCustomerByEmail(String email) {
+
+	    List<Customer> customers =
+	            customerRepository.findByEmailContainingIgnoreCase(email);
+
+	    return customers.stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
+
+	@Override
+	public Page<CustomerResponse> getCustomersWithPagination(int page, int size) {
+
+	    Pageable pageable = PageRequest.of(page, size);
+
+	    Page<Customer> customers =
+	            customerRepository.findAll(pageable);
+
+	    return customers.map(this::convertToResponse);
 	}
 }

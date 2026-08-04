@@ -21,15 +21,15 @@ public class Premium {
 
     @Column(nullable = false)
     private Double amount;
-
-    @Column(nullable = false)
-    private String paymentStatus;
+    
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     public Premium() {
     }
 
     public Premium(Long id, Policy policy, LocalDate paymentDate,
-                   Double amount, String paymentStatus) {
+                   Double amount, PaymentStatus paymentStatus) {
         this.id = id;
         this.policy = policy;
         this.paymentDate = paymentDate;
@@ -69,11 +69,11 @@ public class Premium {
         this.amount = amount;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 }

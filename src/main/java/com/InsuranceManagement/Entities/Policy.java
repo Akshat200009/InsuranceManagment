@@ -31,14 +31,14 @@ public class Policy {
 	@Column(nullable = false)
 	private LocalDate endDate;
 
-	@Column(nullable = false)
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private PolicyStatus status;
 
 	public Policy() {
 	}
 
 	public Policy(Long id, Customer customer, String policyType, String policyNumber,
-			Double premiumAmount, LocalDate startDate, LocalDate endDate, String status) {
+			Double premiumAmount, LocalDate startDate, LocalDate endDate, PolicyStatus status) {
 		super();
 		this.id = id;
 		this.customer = customer;
@@ -106,11 +106,11 @@ public class Policy {
 		this.endDate = endDate;
 	}
 
-	public String getStatus() {
+	public PolicyStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(PolicyStatus status) {
 		this.status = status;
 	}
 }

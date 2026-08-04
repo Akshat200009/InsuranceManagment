@@ -2,6 +2,8 @@ package com.InsuranceManagement.DTO;
 
 import java.time.LocalDate;
 
+import com.InsuranceManagement.Entities.PaymentStatus;
+
 public class PremiumResponse {
 
     private Long id;
@@ -9,13 +11,13 @@ public class PremiumResponse {
     private String policyNumber;
     private Double amount;
     private LocalDate paymentDate;
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     public PremiumResponse() {
     }
 
     public PremiumResponse(Long id, Long policyId, String policyNumber,
-            Double amount, LocalDate paymentDate, String paymentStatus) {
+            Double amount, LocalDate paymentDate, PaymentStatus paymentStatus) {
 
         this.id = id;
         this.policyId = policyId;
@@ -65,11 +67,11 @@ public class PremiumResponse {
         this.paymentDate = paymentDate;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 }

@@ -2,7 +2,10 @@ package com.InsuranceManagement.DTO;
 
 import java.time.LocalDate;
 
+import com.InsuranceManagement.Entities.PaymentStatus;
+
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class PremiumRequest {
 
@@ -10,19 +13,19 @@ public class PremiumRequest {
     private Long policyId;
 
     @NotNull(message = "Amount is required")
+    @Positive(message="Amount must be greater than zero")
     private Double amount;
 
     @NotNull(message = "Payment Date is required")
     private LocalDate paymentDate;
 
-    @NotNull(message = "Payment Status is required")
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     public PremiumRequest() {
     }
 
     public PremiumRequest(Long policyId, Double amount,
-                          LocalDate paymentDate, String paymentStatus) {
+                          LocalDate paymentDate, PaymentStatus paymentStatus) {
         this.policyId = policyId;
         this.amount = amount;
         this.paymentDate = paymentDate;
@@ -53,11 +56,11 @@ public class PremiumRequest {
         this.paymentDate = paymentDate;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 }

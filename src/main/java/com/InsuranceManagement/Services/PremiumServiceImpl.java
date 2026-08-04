@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.InsuranceManagement.DTO.PremiumRequest;
 import com.InsuranceManagement.DTO.PremiumResponse;
+import com.InsuranceManagement.Entities.PaymentStatus;
 import com.InsuranceManagement.Entities.Policy;
 import com.InsuranceManagement.Entities.Premium;
 import com.InsuranceManagement.Repository.PolicyRepository;
@@ -59,7 +60,7 @@ public class PremiumServiceImpl implements PremiumService {
     }
 
 	@Override
-	public List<PremiumResponse> getPaymentStatus(String paymentStatus) {
+	public List<PremiumResponse> getPaymentStatus(PaymentStatus paymentStatus) {
 		
 		 List<Premium> status = premiumRepository.findByPaymentStatus(paymentStatus);
 		  
@@ -71,7 +72,7 @@ public class PremiumServiceImpl implements PremiumService {
 		  List<Premium> premiums =
 		            premiumRepository.findByPaymentDateBeforeAndPaymentStatus(
 		                    LocalDate.now(),
-		                    "PENDING");
+		                    PaymentStatus.PENDING);
 		 return premiums.stream().map(this::convertToResponse).toList();
 	}
 
@@ -89,7 +90,7 @@ public class PremiumServiceImpl implements PremiumService {
 	    List<Premium> premiums =
 	            premiumRepository.findByPaymentDateBeforeAndPaymentStatus(
 	                    LocalDate.now(),
-	                    "PENDING");
+	                    PaymentStatus.PENDING);
 	    return premiums.stream().map(this::convertToResponse).toList();
 	}
 

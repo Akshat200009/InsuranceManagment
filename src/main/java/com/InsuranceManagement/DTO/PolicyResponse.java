@@ -2,6 +2,8 @@ package com.InsuranceManagement.DTO;
 
 import java.time.LocalDate;
 
+import com.InsuranceManagement.Entities.PolicyStatus;
+
 public class PolicyResponse {
 
 	private Long id;
@@ -12,13 +14,13 @@ public class PolicyResponse {
 	private Double premiumAmount;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private String status;
+	private PolicyStatus status;
 
 	public PolicyResponse() {
 	}
 
 	public PolicyResponse(Long id, Long customerId, String customerName, String policyType,
-			String policyNumber, Double premiumAmount, LocalDate startDate, LocalDate endDate, String status) {
+			String policyNumber, Double premiumAmount, LocalDate startDate, LocalDate endDate, PolicyStatus status) {
 
 		this.id = id;
 		this.customerId = customerId;
@@ -95,11 +97,11 @@ public class PolicyResponse {
 		this.endDate = endDate;
 	}
 
-	public String getStatus() {
+	public PolicyStatus getStatus(){
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(PolicyStatus status) {
 		this.status = status;
 	}
 }

@@ -2,12 +2,23 @@ package com.InsuranceManagement.DTO;
 
 import java.time.LocalDate;
 
-public class CustomerRequest {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
+public class CustomerRequest {
+	@NotBlank(message="Customer name is required")
     private String name;
+	@NotNull(message="Date of birth is required")
     private LocalDate dob;
+	@NotBlank(message="Phone number is required")
+	@Pattern(regexp="^[0-9]{10}$", message="Phone number must be 10 digits")
     private String phone;
+	@NotBlank(message="Address is required")
     private String address;
+	@NotBlank(message="Email is required")
+	@Email(message="Invalid email")
     private String email;
 
     public CustomerRequest() {
