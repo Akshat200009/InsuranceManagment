@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,15 +13,18 @@ import com.InsuranceManagement.DTO.CustomerRequest;
 import com.InsuranceManagement.DTO.CustomerResponse;
 import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Repository.CustomerRepository;
+import com.InsuranceManagement.Repository.PolicyRepository;
 import com.InsuranceManagement.Services.CustomerService;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final PolicyRepository policyRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository,PolicyRepository policyRepository) {
         this.customerRepository = customerRepository;
+        this.policyRepository=policyRepository;
     }
     
     private Customer convertToEntity(CustomerRequest request) {
@@ -62,7 +66,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public List<CustomerResponse> getAllCustomers() {
-		List<Customer> customers = customerRepository.findAll();
+		List<Customer> customers = customerRepository.findAll(Sort.by("id"));
 		return customers.stream().map(this::convertToResponse).toList();
 	}
 
@@ -90,13 +94,20 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public void deleteCustomer(Long id) {
-		
-		Customer customer = customerRepository.findById(id)
-				.orElseThrow(()-> new RuntimeException("Customer Not Found with id: " + id));
-		 
+
+	    Customer customer = customerRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+	    if (policyRepository.existsByCustomerId(id)) {
+
+	        throw new RuntimeException(
+	                "Customer has active policies. Delete the policies first."
+	        );
+
+	    }
+
 	    customerRepository.delete(customer);
-			                                                 
-		
+
 	}
 
 	@Override

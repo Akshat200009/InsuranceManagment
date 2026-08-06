@@ -19,6 +19,8 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	
 	Long countByStatus(PolicyStatus status);
 	
+	boolean existsByCustomerId(Long customerId);
+	
 	@Query("""
 			SELECT COUNT(p)
 			FROM Policy p

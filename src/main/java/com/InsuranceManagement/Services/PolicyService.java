@@ -12,6 +12,7 @@ public interface PolicyService {
     PolicyResponse createPolicy(PolicyRequest request);
     
     List<PolicyResponse> getActivePolicies();
+    List<PolicyResponse> getAllPolicies();
     
     PolicyResponse renewPolicy(Long policyId, PolicyRenewRequest request);
     

@@ -34,10 +34,10 @@ public class AuthServiceImpl implements AuthService {
 	public String register(RegisterRequest request) {
 
 		if (userRepo.existsByEmail(request.getEmail())) {
-			return "Email already Exists";
+			throw new RuntimeException("Email already Exists") ;
 		}
 		if (userRepo.existsByPhone(request.getPhone())) {
-			return "Phone Already Exists";
+			throw new RuntimeException("Phone Already Exists");
 		}
 
 		User user = new User();
@@ -72,6 +72,8 @@ public class AuthServiceImpl implements AuthService {
 
 	    return new AuthResponse(
 	            token,
+	            user.getRole().name(),
+	            user.getFullname(),
 	            "Login Successful");
 	}
 

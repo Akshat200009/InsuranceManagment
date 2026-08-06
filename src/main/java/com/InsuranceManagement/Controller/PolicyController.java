@@ -30,6 +30,14 @@ public class PolicyController {
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
+
+        List<PolicyResponse> policies = policyService.getAllPolicies();
+
+        return ResponseEntity.ok(policies);
+    }
     @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
     @GetMapping("/active")
     public ResponseEntity<List<PolicyResponse>> getActivePolicy()

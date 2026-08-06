@@ -3,13 +3,18 @@ package com.InsuranceManagement.DTO;
 public class AuthResponse {
 
 	private String token;
+	private String role;
+	private String fullName;
 	private String message;
 
-	public AuthResponse(String token, String message) {
+	public AuthResponse(String token, String role, String fullName,String message) {
 		super();
 		this.token = token;
+		this.role=role;
+		this.fullName=fullName;
 		this.message = message;
 	}
+	
 	//Default Constructor
 	public AuthResponse()
 	{
@@ -23,7 +28,19 @@ public class AuthResponse {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	public String getFullName() {
+		return fullName;
+	}
 
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
 	public String getMessage() {
 		return message;
 	}

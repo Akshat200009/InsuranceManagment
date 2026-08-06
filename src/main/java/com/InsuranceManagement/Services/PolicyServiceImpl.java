@@ -66,6 +66,15 @@ public class PolicyServiceImpl implements PolicyService {
 		   
 		return convertToResponse(createPolicy);
 	}
+	
+	@Override
+	public List<PolicyResponse> getAllPolicies() {
+
+	    return policyRepository.findAll()
+	            .stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
 
 	@Override
 	public List<PolicyResponse> getActivePolicies() {
