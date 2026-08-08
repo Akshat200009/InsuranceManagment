@@ -23,7 +23,7 @@ public class DocumentController {
     public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @PostMapping("/upload/{customerId}")
     public ResponseEntity<String> uploadIdentityDocument(
             @PathVariable Long customerId,
@@ -33,7 +33,7 @@ public class DocumentController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/customer/{customerId}/{documentType}")
     public ResponseEntity<List<DocumentResponse>> viewDocs(@PathVariable Long customerId,
     		@PathVariable DocumentType documentType)
@@ -42,7 +42,7 @@ public class DocumentController {
     	
     	return ResponseEntity.ok(list);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @PostMapping("/upload/policy/{customerId}")
     public ResponseEntity<String> uploadDocument(@PathVariable Long customerId ,
     		@RequestParam ("file") MultipartFile file)
@@ -51,7 +51,7 @@ public class DocumentController {
     	return new ResponseEntity<>(upload ,HttpStatus.OK);
     	
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/download/{documentId}")
     public ResponseEntity<Resource> downloadDocument(
             @PathVariable Long documentId) {
@@ -63,13 +63,22 @@ public class DocumentController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<DocumentResponse>> viewUploadedFiles(@PathVariable Long customerId)
     {
     	List<DocumentResponse> list = documentService.viewUploadedFiles(customerId);
     	
     	return ResponseEntity.ok(list);
+    }
+    
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping
+    public ResponseEntity<List<DocumentResponse>> getAllDocuments() {
+
+        return ResponseEntity.ok(
+                documentService.getAllDocuments()
+        );
     }
 
 }

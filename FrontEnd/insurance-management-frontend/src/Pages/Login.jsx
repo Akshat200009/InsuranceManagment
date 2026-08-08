@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 
 import { toast } from "react-toastify";
-import authService from "../Services/AuthService";
+import authService from "../Services/authService";
 
 function Login() {
 

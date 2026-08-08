@@ -158,4 +158,13 @@ public class DocumentServiceImpl implements DocumentService {
 		   return list.stream().map(this::convertToResponse).toList();
 		 
 	}
+	
+	@Override
+	public List<DocumentResponse> getAllDocuments() {
+
+	    return documentRepository.findAll()
+	            .stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
 }

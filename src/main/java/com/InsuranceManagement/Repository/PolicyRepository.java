@@ -17,7 +17,11 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	
 	List<Policy> findByEndDateBefore(LocalDate Date);
 	
+	List<Policy> findByCustomerId(Long customerId);
+	
 	Long countByStatus(PolicyStatus status);
+	
+	boolean existsByPolicyNumber(String policyNumber);
 	
 	boolean existsByCustomerId(Long customerId);
 	
@@ -29,5 +33,16 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 			""")
 			Long countPoliciesByMonth(int month, int year);
 	
+	List<Policy> findByEndDateBetweenAndStatus(
+	        LocalDate startDate,
+	        LocalDate endDate,
+	        PolicyStatus status
+	);
+	
+	@Query("""
+		       SELECT COALESCE(SUM(p.premiumAmount),0)
+		       FROM Policy p
+		       """)
+		Double getTotalPremium();
 	
 }

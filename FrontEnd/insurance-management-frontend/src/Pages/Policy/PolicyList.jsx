@@ -2,188 +2,293 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 import policyService from "../../Services/policyService";
 import PolicyTable from "../../Components/policy/PolicyTable";
+import RenewPolicyModal from "../../Components/policy/RenewPolicyModal";
 
 function PolicyList() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const [policies, setPolicies] = useState([]);
 
-    const [policies, setPolicies] = useState([]);
+  const [filter, setFilter] = useState("ALL");
 
-    const [filter, setFilter] = useState("ALL");
+  const [showRenewModal, setShowRenewModal] = useState(false);
 
-    const loadPolicies = async () => {
+const [selectedPolicy, setSelectedPolicy] = useState(null);
 
-        try {
+  useEffect(() => {
+    loadPolicies();
+  }, [filter]);
 
-            let response;
+  const loadPolicies = async () => {
+    try {
+      let response;
 
-            switch (filter) {
+      switch (filter) {
+        case "ACTIVE":
+          response = await policyService.getActivePolicies();
 
-                case "ACTIVE":
+          break;
 
-                    response = await policyService.getActivePolicies();
+        case "EXPIRED":
+          response = await policyService.getExpiredPolicies();
 
-                    break;
+          break;
 
-                case "EXPIRED":
+        case "CANCELLED":
+          response = await policyService.getPoliciesByStatus("CANCELLED");
 
-                    response = await policyService.getExpiredPolicies();
+          break;
 
-                    break;
+        default:
+          response = await policyService.getAllPolicies();
+      }
 
-                case "CANCELLED":
+      setPolicies(response);
+    } catch (error) {
+      console.log(error);
 
-                    response = await policyService.getPoliciesByStatus("CANCELLED");
+      toast.error("Unable to load policies");
+    }
+  };
+ 
+  const handleRenew = (policy) => {
 
-                    break;
+    setSelectedPolicy(policy);
 
-                default:
+    setShowRenewModal(true);
 
-                    response = await policyService.getAllPolicies();
+};
+const renewPolicy = async (renewData) => {
 
-            }
+    try {
 
-            setPolicies(response);
+        const updatedPolicy =
+            await policyService.renewPolicy(
 
-        }
+                selectedPolicy.id,
 
-        catch (error) {
+                renewData
 
-            console.log(error);
+            );
 
-            toast.error("Unable to load policies");
+        setPolicies((prev) =>
 
-        }
+            prev.map((policy) =>
 
-    };
+                policy.id === updatedPolicy.id
 
-    useEffect(() => {
+                    ? updatedPolicy
 
-        loadPolicies();
+                    : policy
 
-    }, [filter]);
+            )
 
-    return (
+        );
 
-        <div className="p-8">
+        setShowRenewModal(false);
+        setSelectedPolicy(null);
 
-            {/* Heading */}
+        Swal.fire({
 
-            <div className="flex justify-between items-center mb-8">
+            icon: "success",
 
-                <h1 className="text-3xl font-bold">
+            title: "Renewed!",
 
-                    Policy Management
+            text: "Policy Renewed Successfully",
 
-                </h1>
+            timer: 1500,
 
-                <button
+            showConfirmButton: false
 
-                    onClick={() => navigate("/policies/add")}
+        });
 
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
+    }
 
-                >
+    catch (error) {
 
-                    <FaPlus />
+        Swal.fire({
 
-                    Add Policy
+            icon: "error",
 
-                </button>
+            title: "Failed",
 
-            </div>
+            text:
 
-            {/* Filters */}
+                error.response?.data?.message ||
 
-            <div className="flex gap-4 mb-8">
+                "Unable to renew policy"
 
-                <button
+        });
 
-                    onClick={() => setFilter("ALL")}
+    }
 
-                    className={`px-4 py-2 rounded-lg ${
-                        filter === "ALL"
-                            ? "bg-blue-600 text-white"
-                            : "border"
-                    }`}
+};
 
-                >
+  const handleCancel = async (policy) => {
+    const result = await Swal.fire({
+      title: "Cancel Policy",
 
-                    All
+      html: `
+                <p style="font-size:16px">
+                    Are you sure you want to cancel
+                    <br><br>
+                    <b>${policy.policyNumber}</b> ?
+                </p>
+            `,
 
-                </button>
+      icon: "warning",
 
-                <button
+      showCancelButton: true,
 
-                    onClick={() => setFilter("ACTIVE")}
+      confirmButtonText: "Yes, Cancel",
 
-                    className={`px-4 py-2 rounded-lg ${
-                        filter === "ACTIVE"
-                            ? "bg-green-600 text-white"
-                            : "border"
-                    }`}
+      cancelButtonText: "No",
 
-                >
+      confirmButtonColor: "#dc2626",
 
-                    Active
+      cancelButtonColor: "#6b7280",
 
-                </button>
+      reverseButtons: true,
+    });
 
-                <button
+    if (!result.isConfirmed) {
+      return;
+    }
 
-                    onClick={() => setFilter("EXPIRED")}
+    try {
+      const updatedPolicy = await policyService.cancelPolicy(policy.id);
 
-                    className={`px-4 py-2 rounded-lg ${
-                        filter === "EXPIRED"
-                            ? "bg-yellow-500 text-white"
-                            : "border"
-                    }`}
+      setPolicies((prevPolicies) =>
+        prevPolicies.map((p) =>
+          p.id === policy.id ? { ...p, status: updatedPolicy.status } : p,
+        ),
+      );
 
-                >
+      await Swal.fire({
+        icon: "success",
 
-                    Expired
+        title: "Cancelled!",
 
-                </button>
+        text: "Policy cancelled successfully.",
 
-                <button
+        timer: 1500,
 
-                    onClick={() => setFilter("CANCELLED")}
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.log(error);
 
-                    className={`px-4 py-2 rounded-lg ${
-                        filter === "CANCELLED"
-                            ? "bg-red-600 text-white"
-                            : "border"
-                    }`}
+      Swal.fire({
+        icon: "error",
 
-                >
+        title: "Failed",
 
-                    Cancelled
+        text: error.response?.data?.message || "Unable to cancel policy.",
+      });
+    }
+  };
 
-                </button>
+  return (
+    <div className="p-8">
+      {/* Heading */}
 
-            </div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Policy Management</h1>
 
-            {/* Table */}
+        <button
+          onClick={() => navigate("/policies/add")}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
+        >
+          <FaPlus />
+          Add Policy
+        </button>
+      </div>
 
-            <PolicyTable
+      {/* Filters */}
 
-                policies={policies}
+      <div className="flex gap-4 mb-8">
+        <button
+          onClick={() => setFilter("ALL")}
+          className={`px-5 py-2 rounded-lg transition ${
+            filter === "ALL"
+              ? "bg-blue-600 text-white"
+              : "border hover:bg-gray-100"
+          }`}
+        >
+          All
+        </button>
 
-            />
+        <button
+          onClick={() => setFilter("ACTIVE")}
+          className={`px-5 py-2 rounded-lg transition ${
+            filter === "ACTIVE"
+              ? "bg-green-600 text-white"
+              : "border hover:bg-gray-100"
+          }`}
+        >
+          Active
+        </button>
 
-            <h2 className="text-red-500 text-2xl mt-8">
+        <button
+          onClick={() => setFilter("EXPIRED")}
+          className={`px-5 py-2 rounded-lg transition ${
+            filter === "EXPIRED"
+              ? "bg-yellow-500 text-white"
+              : "border hover:bg-gray-100"
+          }`}
+        >
+          Expired
+        </button>
 
-                Policy Count : {policies.length}
+        <button
+          onClick={() => setFilter("CANCELLED")}
+          className={`px-5 py-2 rounded-lg transition ${
+            filter === "CANCELLED"
+              ? "bg-red-600 text-white"
+              : "border hover:bg-gray-100"
+          }`}
+        >
+          Cancelled
+        </button>
+      </div>
 
-            </h2>
+      {/* Table */}
 
-        </div>
+      <PolicyTable
+        policies={policies}
+        onRenew={handleRenew}
+        onCancel={handleCancel}
+      />
 
-    );
+      {/* Count */}
 
+      <h2 className="text-red-500 text-2xl mt-8">
+        Policy Count : {policies.length}
+      </h2>
+
+      {
+    showRenewModal && selectedPolicy &&(
+
+        <RenewPolicyModal
+
+            policy={selectedPolicy}
+
+            onRenew={renewPolicy}
+
+            onClose={() => { setShowRenewModal(false);
+                setSelectedPolicy(null);
+            }}
+
+        />
+
+    )
+}
+    </div>
+  );
 }
 
 export default PolicyList;

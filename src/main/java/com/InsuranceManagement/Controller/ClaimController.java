@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.InsuranceManagement.DTO.ClaimRequest;
 import com.InsuranceManagement.DTO.ClaimResponse;
+import com.InsuranceManagement.Entities.ClaimStatus;
 import com.InsuranceManagement.Services.ClaimService;
 
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class ClaimController {
 	public ClaimController(ClaimService claimService) {
 		this.claimService = claimService;
 	}
-	@PreAuthorize("hasRole('CUSTOMER')")
+	@PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
 	@PostMapping
 	public ResponseEntity<ClaimResponse> submitClaim(@Valid @RequestBody ClaimRequest request) {
 
@@ -53,12 +54,39 @@ public class ClaimController {
     	
     	return ResponseEntity.ok(status);
     }
-	@PreAuthorize("hasRole('CUSTOMER')")
+	@PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @PutMapping("/history/{policyId}")
     public ResponseEntity<List<ClaimResponse>> getAllClaims(@PathVariable Long policyId)
     {
     	List<ClaimResponse> list = claimService.getClaimHistory(policyId);
     	return ResponseEntity.ok(list);
     }
+	@PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+	@GetMapping("/status")
+	public ResponseEntity<List<ClaimResponse>> getClaimsByStatus(
+	        @RequestParam ClaimStatus status) {
+
+	    return ResponseEntity.ok(
+	            claimService.getClaimsByStatus(status)
+	    );
+	}
+	@PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+	@GetMapping("/{claimId}")
+	public ResponseEntity<ClaimResponse> getClaimById(
+	        @PathVariable Long claimId) {
+
+	    return ResponseEntity.ok(
+	            claimService.getClaimById(claimId)
+	    );
+	}
+	@PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+	@GetMapping("/customer/{customerId}")
+	public ResponseEntity<List<ClaimResponse>> getCustomerClaims(
+	        @PathVariable Long customerId) {
+
+	    return ResponseEntity.ok(
+	            claimService.getCustomerClaims(customerId)
+	    );
+	}
 
 }

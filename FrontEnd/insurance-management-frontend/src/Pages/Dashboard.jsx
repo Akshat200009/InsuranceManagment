@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import DashboardCard from "../Components/DashboardCard";
 import { quickActions } from "../data/quickActions";
-import { useNavigate } from "react-router-dom";
+import dashboardService from "../Services/dashboardService";
+import toast from "react-hot-toast";
 
 import {
     FaUsers,
@@ -17,6 +20,44 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const actions = quickActions[role] || [];
+
+    const [dashboard, setDashboard] = useState({
+
+        customerCount: 0,
+
+        policyCount: 0,
+
+        claimCount: 0,
+
+        totalPremium: 0
+
+    });
+
+    useEffect(() => {
+
+        loadDashboard();
+
+    }, []);
+
+    const loadDashboard = async () => {
+
+        try {
+
+            const response = await dashboardService.getDashboard();
+
+            setDashboard(response);
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+            toast.error("Unable to load dashboard");
+
+        }
+
+    };
 
     return (
 
@@ -51,31 +92,51 @@ function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
 
                 <DashboardCard
+
                     title="Customers"
-                    value="120"
+
+                    value={dashboard.customerCount}
+
                     color="border-blue-600"
+
                     icon={<FaUsers className="text-blue-600" />}
+
                 />
 
                 <DashboardCard
+
                     title="Policies"
-                    value="58"
+
+                    value={dashboard.policyCount}
+
                     color="border-green-600"
+
                     icon={<FaFileContract className="text-green-600" />}
+
                 />
 
                 <DashboardCard
+
                     title="Claims"
-                    value="14"
+
+                    value={dashboard.claimCount}
+
                     color="border-red-600"
+
                     icon={<FaClipboardList className="text-red-600" />}
+
                 />
 
                 <DashboardCard
+
                     title="Premium"
-                    value="₹2,50,000"
+
+                    value={`₹${dashboard.totalPremium.toLocaleString()}`}
+
                     color="border-yellow-500"
+
                     icon={<FaMoneyBillWave className="text-yellow-500" />}
+
                 />
 
             </div>
@@ -93,19 +154,27 @@ function Dashboard() {
                 <ul className="space-y-4">
 
                     <li className="border-b pb-3">
+
                         ✅ New Customer Registered
+
                     </li>
 
                     <li className="border-b pb-3">
+
                         💰 Premium Received
+
                     </li>
 
                     <li className="border-b pb-3">
+
                         📄 Policy Approved
+
                     </li>
 
                     <li>
+
                         🚗 Claim Request Submitted
+
                     </li>
 
                 </ul>

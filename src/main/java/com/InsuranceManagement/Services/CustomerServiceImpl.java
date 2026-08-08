@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.InsuranceManagement.DTO.CustomerRequest;
 import com.InsuranceManagement.DTO.CustomerResponse;
 import com.InsuranceManagement.Entities.Customer;
+import com.InsuranceManagement.Entities.Policy;
 import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.PolicyRepository;
 import com.InsuranceManagement.Services.CustomerService;
@@ -156,4 +157,5 @@ public class CustomerServiceImpl implements CustomerService {
 
 	    return customers.map(this::convertToResponse);
 	}
+
 }

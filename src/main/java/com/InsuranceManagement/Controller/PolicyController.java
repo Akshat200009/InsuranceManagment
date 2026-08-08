@@ -30,6 +30,16 @@ public class PolicyController {
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping("/{policyId}")
+    public ResponseEntity<PolicyResponse> getPolicyById(
+            @PathVariable Long policyId) {
+
+        PolicyResponse response =
+                policyService.getPolicyById(policyId);
+
+        return ResponseEntity.ok(response);
+    }
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
     public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
@@ -71,6 +81,7 @@ public class PolicyController {
     	
     	return ResponseEntity.ok(expired);
     }
+    
     @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
     @GetMapping("/status")
     public ResponseEntity<List<PolicyResponse>> getPolicesByStatus(@RequestParam PolicyStatus status)
@@ -80,9 +91,25 @@ public class PolicyController {
     	return ResponseEntity.ok(list);
     	
     }
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping("/expiring")
+    public ResponseEntity<List<PolicyResponse>> getExpiringPolicies() {
+
+        return ResponseEntity.ok(
+                policyService.getExpiringPolicies()
+        );
+
+    }
     
-    
-    
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<PolicyResponse>> getPoliciesByCustomer(
+            @PathVariable Long customerId) {
+
+        return ResponseEntity.ok(
+                policyService.getPoliciesByCustomer(customerId)
+        );
+    }
     
     
 }

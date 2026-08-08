@@ -16,6 +16,8 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
     List<Claim> findByStatus(ClaimStatus status);
     
     Long countByStatus(ClaimStatus status);
+    
+    List<Claim> findByPolicyCustomerId(Long customerId);
 
 
 }

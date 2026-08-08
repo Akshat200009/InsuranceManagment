@@ -11,6 +11,12 @@ import DashboardLayout from "../Layouts/DashboardLayout";
 import CustomerProfile from "../Pages/Customer/CustomerProfile";
 import PolicyList from "../Pages/Policy/PolicyList";
 import AddPolicy from "../Pages/Policy/AddPolicy";
+import PolicyDetails from "../Pages/Policy/PolicyDetails";
+import ClaimList from "../Pages/Claim/ClaimList";
+import AddClaim from "../Pages/Claim/AddClaim";
+import ClaimDetails from "../Pages/Claim/ClaimDetails";
+import DocumentList from "../Pages/Document/DocumentList";
+
 
 function AppRoutes() {
   return (
@@ -68,13 +74,13 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      
-      Policy Routes
       <Route
         path="/policies"
         element={
           <ProtectedRoute>
-            <PolicyList />
+            <DashboardLayout>
+              <PolicyList />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />
@@ -82,11 +88,28 @@ function AppRoutes() {
         path="/policies/add"
         element={
           <ProtectedRoute>
-            <AddPolicy />
+            <DashboardLayout>
+              <AddPolicy />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />
+      <Route path="/policies/:id" element={<PolicyDetails />} />
+
+      <Route path="/claims" element={
+        <ClaimList />} />
+
+
+      <Route path="/claims/add" element={
+        <DashboardLayout><AddClaim /></DashboardLayout>} />
+
+        <Route path="/claims/:id" element={<ClaimDetails />} />
+
+        <Route path="/documents" element={<DocumentList />} />
+
     </Routes>
+
+    
   );
 }
 

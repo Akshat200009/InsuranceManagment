@@ -99,4 +99,22 @@ public class ClaimServiceImpl implements ClaimService {
 	            .map(this::convertToResponse)
 	            .toList();
 	}
+	@Override
+	public ClaimResponse getClaimById(Long claimId) {
+
+	    Claim claim = claimRepository.findById(claimId)
+	            .orElseThrow(() -> new RuntimeException("Claim Not Found"));
+
+	    return convertToResponse(claim);
+	}
+	@Override
+	public List<ClaimResponse> getCustomerClaims(Long customerId) {
+
+	    List<Claim> claims =
+	            claimRepository.findByPolicyCustomerId(customerId);
+
+	    return claims.stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
 }

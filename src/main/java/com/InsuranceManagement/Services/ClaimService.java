@@ -17,8 +17,10 @@ public interface ClaimService {
 	ClaimResponse rejectClaim(Long claimId);
 	 
 	List<ClaimResponse> getClaimHistory(Long policyId);
+	List<ClaimResponse> getCustomerClaims(Long customerId);
 	
 	List<ClaimResponse> getClaimsByStatus(ClaimStatus status);
+	ClaimResponse getClaimById(Long claimId);
 	
 	
 	
