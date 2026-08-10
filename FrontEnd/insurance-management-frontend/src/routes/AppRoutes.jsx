@@ -16,7 +16,10 @@ import ClaimList from "../Pages/Claim/ClaimList";
 import AddClaim from "../Pages/Claim/AddClaim";
 import ClaimDetails from "../Pages/Claim/ClaimDetails";
 import DocumentList from "../Pages/Document/DocumentList";
-
+import PremiumList from "../Pages/Premium/PremiumList";
+import AddPremium from "../Pages/Premium/AddPremium";
+import PremiumDetails from "../Pages/Premium/PremiumDetails";
+import ReportsDashboard from "../Pages/Reports/ReportsDashboard";
 
 function AppRoutes() {
   return (
@@ -96,20 +99,30 @@ function AppRoutes() {
       />
       <Route path="/policies/:id" element={<PolicyDetails />} />
 
-      <Route path="/claims" element={
-        <ClaimList />} />
+      <Route path="/claims" element={<ClaimList />} />
 
+      <Route
+        path="/claims/add"
+        element={
+          <DashboardLayout>
+            <AddClaim />
+          </DashboardLayout>
+        }
+      />
 
-      <Route path="/claims/add" element={
-        <DashboardLayout><AddClaim /></DashboardLayout>} />
+      <Route path="/claims/:id" element={<ClaimDetails />} />
 
-        <Route path="/claims/:id" element={<ClaimDetails />} />
+      <Route path="/documents" element={<DocumentList />} />
 
-        <Route path="/documents" element={<DocumentList />} />
+      <Route path="/premiums" element={<PremiumList />} />
+
+      <Route path="/premiums/add" element={<AddPremium />} />
+
+      <Route path="/premiums/:id" element={<PremiumDetails />} />
+
+      <Route path="/reports" element={<ReportsDashboard />}/>
 
     </Routes>
-
-    
   );
 }
 

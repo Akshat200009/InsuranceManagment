@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.InsuranceManagement.DTO.PremiumRequest;
 import com.InsuranceManagement.DTO.PremiumResponse;
+import com.InsuranceManagement.DTO.PremiumStatisticsResponse;
 import com.InsuranceManagement.Entities.PaymentStatus;
 import com.InsuranceManagement.Services.PremiumService;
 
@@ -23,7 +24,7 @@ public class PremiumController {
     public PremiumController(PremiumService premiumService) {
         this.premiumService = premiumService;
     }
-    @PreAuthorize("hasRole('CUSTOMER')") 
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')") 
     @PostMapping
     public ResponseEntity<PremiumResponse> recordPremiumPayment(
             @Valid @RequestBody PremiumRequest request) {
@@ -34,7 +35,7 @@ public class PremiumController {
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/status/{paymentStatus}")
     public ResponseEntity<List<PremiumResponse>> PaymentStatus(@PathVariable PaymentStatus paymentStatus)
     {
@@ -42,7 +43,7 @@ public class PremiumController {
     	
     	return ResponseEntity.ok(payment);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/due")
     public ResponseEntity<List<PremiumResponse>> dueDate()
     {
@@ -51,7 +52,7 @@ public class PremiumController {
     	return ResponseEntity.ok(due);
     }
     
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/history/{policyId}")
     public ResponseEntity<List<PremiumResponse>> getPaymentHistory(
             @PathVariable Long policyId) {
@@ -61,7 +62,7 @@ public class PremiumController {
 
         return ResponseEntity.ok(response);
     }
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping("/overdue")
     public ResponseEntity<List<PremiumResponse>> getOverduePremiums() {
 
@@ -69,6 +70,34 @@ public class PremiumController {
                 premiumService.getOverduePremiums();
 
         return ResponseEntity.ok(response);
+    }
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping
+    public ResponseEntity<List<PremiumResponse>> getAllPremiums() {
+
+        List<PremiumResponse> premiums = premiumService.getAllPremiums();
+
+        return ResponseEntity.ok(premiums);
+    }
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping("/{id}")
+    public ResponseEntity<PremiumResponse> getPremiumById(
+            @PathVariable Long id) {
+
+        PremiumResponse premium = premiumService.getPremiumById(id);
+
+        return ResponseEntity.ok(premium);
+    }
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
+    @GetMapping("/statistics")
+    public ResponseEntity<PremiumStatisticsResponse> getStatistics() {
+
+        return ResponseEntity.ok(
+
+                premiumService.getPremiumStatistics()
+
+        );
+
     }
 
 }

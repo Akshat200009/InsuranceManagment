@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt , FaChartBar } from "react-icons/fa";
 
 import { sidebarMenu } from "../data/sidebarMenu";
 import { useAuth } from "../Context/AuthContext";

@@ -23,6 +23,16 @@ public interface PremiumRepository extends  JpaRepository<Premium, Long> {
 	   
 	   @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Premium p")
 	   Double getTotalPremiumCollection();
+	   
+	   long countByPaymentStatus(PaymentStatus paymentStatus);
+
+	   @Query("""
+	   SELECT COUNT(p)
+	   FROM Premium p
+	   WHERE p.paymentDate < CURRENT_DATE
+	   AND p.paymentStatus='PENDING'
+	   """)
+	   Long countOverduePremiums();
 
 	
 }

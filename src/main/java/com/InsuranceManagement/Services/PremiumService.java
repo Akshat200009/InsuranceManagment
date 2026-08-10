@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.InsuranceManagement.DTO.PremiumRequest;
 import com.InsuranceManagement.DTO.PremiumResponse;
+import com.InsuranceManagement.DTO.PremiumStatisticsResponse;
 import com.InsuranceManagement.Entities.PaymentStatus;
 
 public interface PremiumService {
@@ -16,5 +17,9 @@ public interface PremiumService {
     
     List<PremiumResponse> getPaymentHistory(Long policyId);
     List<PremiumResponse> getOverduePremiums();
+    List<PremiumResponse> getAllPremiums();
+    PremiumResponse getPremiumById(Long id);
+    PremiumStatisticsResponse getPremiumStatistics();
+    
 
 }
