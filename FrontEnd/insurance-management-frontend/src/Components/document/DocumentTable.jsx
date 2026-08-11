@@ -1,6 +1,9 @@
 import DocumentRow from "./DocumentRow";
 
-function DocumentTable({ documents }) {
+function DocumentTable({
+    documents,
+    onDocumentUpdate
+}) {
 
     return (
 
@@ -12,37 +15,46 @@ function DocumentTable({ documents }) {
 
                     <tr className="bg-gray-100">
 
-                        <th className="p-4 text-left">Customer</th>
+                        <th className="p-4 text-left">
+                            Customer
+                        </th>
 
-                        <th className="p-4 text-left">File Name</th>
+                        <th className="p-4 text-left">
+                            File Name
+                        </th>
 
-                        <th className="p-4 text-left">Type</th>
+                        <th className="p-4 text-left">
+                            Type
+                        </th>
 
-                        <th className="p-4 text-left">Uploaded</th>
+                        <th className="p-4 text-left">
+                            Uploaded
+                        </th>
 
-                        <th className="p-4 text-center">Action</th>
+                        <th className="p-4 text-left">
+                            Status
+                        </th>
+
+                        <th className="p-4 text-center">
+                            Action
+                        </th>
 
                     </tr>
 
                 </thead>
 
+
                 <tbody>
 
-                    {
+                    {documents.map((document) => (
 
-                        documents.map(document => (
+                        <DocumentRow
+                            key={document.id}
+                            document={document}
+                            onDocumentUpdate={onDocumentUpdate}
+                        />
 
-                            <DocumentRow
-
-                                key={document.id}
-
-                                document={document}
-
-                            />
-
-                        ))
-
-                    }
+                    ))}
 
                 </tbody>
 

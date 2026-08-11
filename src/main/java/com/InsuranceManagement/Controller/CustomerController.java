@@ -30,8 +30,7 @@ public class CustomerController {
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-//    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','AGENT')")
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> getAllCustomers()
     {

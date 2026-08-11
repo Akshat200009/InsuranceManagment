@@ -19,6 +19,7 @@ import com.InsuranceManagement.DTO.DocumentResponse;
 import com.InsuranceManagement.Entities.Claim;
 import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Entities.Document;
+import com.InsuranceManagement.Entities.DocumentStatus;
 import com.InsuranceManagement.Entities.DocumentType;
 import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.DocumentRepository;
@@ -54,6 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
 		response.setFilePath(docs.getFilePath());
 		response.setUploadedAt(docs.getUploadedAt());
 		response.setDocumentType(docs.getDocumentType());
+		response.setStatus(docs.getStatus());
 
 		return response;
 	}
@@ -97,6 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
 			document.setFilePath(filePath.toString());
 			document.setUploadedAt(LocalDateTime.now());
 			document.setDocumentType(DocumentType.IDENTITY);
+			document.setStatus(DocumentStatus.PENDING);
 
 			documentRepository.save(document);
 
@@ -138,6 +141,7 @@ public class DocumentServiceImpl implements DocumentService {
 			document.setFileName(Filename);
 			document.setFilePath(FilePath.toString());
 			document.setUploadedAt(LocalDateTime.now());
+			document.setStatus(DocumentStatus.PENDING);
 
 			documentRepository.save(document);
 
@@ -200,5 +204,49 @@ public class DocumentServiceImpl implements DocumentService {
 	            .stream()
 	            .map(this::convertToResponse)
 	            .toList();
+	}
+
+	@Override
+	public DocumentResponse verifyDocument(Long documentId) {
+
+	    Document document = documentRepository.findById(documentId)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Document not found"));
+
+	    if (document.getStatus() != DocumentStatus.PENDING) {
+
+	        throw new RuntimeException(
+	                "Only pending documents can be verified"
+	        );
+	    }
+
+	    document.setStatus(DocumentStatus.VERIFIED);
+
+	    Document updatedDocument =
+	            documentRepository.save(document);
+
+	    return convertToResponse(updatedDocument);
+	}
+
+	@Override
+	public DocumentResponse rejectDocument(Long documentId) {
+
+	    Document document = documentRepository.findById(documentId)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Document not found"));
+
+	    if (document.getStatus() != DocumentStatus.PENDING) {
+
+	        throw new RuntimeException(
+	                "Only pending documents can be rejected"
+	        );
+	    }
+
+	    document.setStatus(DocumentStatus.REJECTED);
+
+	    Document updatedDocument =
+	            documentRepository.save(document);
+
+	    return convertToResponse(updatedDocument);
 	}
 }

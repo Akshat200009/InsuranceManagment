@@ -2,6 +2,7 @@ package com.InsuranceManagement.DTO;
 
 import java.time.LocalDateTime;
 
+import com.InsuranceManagement.Entities.DocumentStatus;
 import com.InsuranceManagement.Entities.DocumentType;
 
 public class DocumentResponse {
@@ -13,6 +14,7 @@ public class DocumentResponse {
     private String filePath;
     private LocalDateTime uploadedAt;
     private DocumentType documentType;
+    private DocumentStatus status;
 
    
 
@@ -20,7 +22,7 @@ public class DocumentResponse {
     }
 
 	public DocumentResponse(Long id, Long customerId, String customerName, String fileName, String filePath,
-			LocalDateTime uploadedAt, DocumentType documentType) {
+			LocalDateTime uploadedAt, DocumentType documentType, DocumentStatus status) {
 		super();
 		this.id = id;
 		this.customerId = customerId;
@@ -29,6 +31,7 @@ public class DocumentResponse {
 		this.filePath = filePath;
 		this.uploadedAt = uploadedAt;
 		this.documentType = documentType;
+		this.status = status;
 	}
 
     public Long getId() {
@@ -84,6 +87,14 @@ public class DocumentResponse {
 
 	public void setDocumentType(DocumentType documentType) {
 		this.documentType = documentType;
+	}
+
+	public DocumentStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DocumentStatus status) {
+		this.status = status;
 	}
 
 }

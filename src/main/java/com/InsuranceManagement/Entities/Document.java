@@ -28,6 +28,10 @@ public class Document {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentType documentType;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DocumentStatus status;
 
     
 
@@ -35,13 +39,14 @@ public class Document {
     }
 
     public Document(Long id, Customer customer, String fileName,
-                    String filePath, LocalDateTime uploadedAt,DocumentType documentType) {
+                    String filePath, LocalDateTime uploadedAt,DocumentType documentType , DocumentStatus status) {
         this.id = id;
         this.customer = customer;
         this.fileName = fileName;
         this.filePath = filePath;
         this.uploadedAt = uploadedAt;
         this.documentType=documentType;
+        this.status = status;
     }
 
     public Long getId() {
@@ -89,5 +94,12 @@ public class Document {
 
 	public void setDocumentType(DocumentType documentType) {
 		this.documentType = documentType;
+	}
+	public DocumentStatus getStatus() {
+	    return status;
+	}
+
+	public void setStatus(DocumentStatus status) {
+	    this.status = status;
 	}
 }

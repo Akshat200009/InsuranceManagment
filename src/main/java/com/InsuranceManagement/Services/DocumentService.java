@@ -17,5 +17,8 @@ public interface DocumentService {
     String uploadPolicyDocument(Long customerId, MultipartFile file);
     Resource downloadDocument(Long documentId);
     List<DocumentResponse> viewUploadedFiles(Long customerId);
+    DocumentResponse verifyDocument(Long documentId);
+
+    DocumentResponse rejectDocument(Long documentId);
 
 }

@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+
 import DashboardLayout from "../../Layouts/DashboardLayout";
-import { FaUpload } from "react-icons/fa";
+
 import UploadDocumentModal from "../../Components/document/UploadDocumentModal";
+
 import DocumentTable from "../../Components/document/DocumentTable";
+
 import documentService from "../../Services/documentService";
+
 import toast from "react-hot-toast";
+
 
 function DocumentList() {
 
@@ -12,24 +17,68 @@ function DocumentList() {
 
     const [showModal, setShowModal] = useState(false);
 
+    const role = localStorage.getItem("role");
+
+    const isCustomer = role === "CUSTOMER";
+
+    const isAgent = role === "AGENT";
+
+
+    // ===============================
+    // LOAD DOCUMENTS
+    // ===============================
+
     useEffect(() => {
 
         loadDocuments();
 
     }, []);
 
+
     const loadDocuments = async () => {
 
         try {
 
-            const response =
-                await documentService.getMyDocuments();
+            let response;
+
+
+            // ===============================
+            // CUSTOMER
+            // ===============================
+
+            if (isCustomer) {
+
+                response =
+                    await documentService.getMyDocuments();
+
+            }
+
+            // ===============================
+            // AGENT
+            // ===============================
+
+            else if (isAgent) {
+
+                response =
+                    await documentService.getAllDocuments();
+
+            }
+
+            // ===============================
+            // ADMIN
+            // ===============================
+
+            else {
+
+                response =
+                    await documentService.getAllDocuments();
+
+            }
+
 
             setDocuments(response);
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.log(error);
 
@@ -39,13 +88,51 @@ function DocumentList() {
 
     };
 
+
+    // ===============================
+    // UPDATE DOCUMENT IN SAME ROW
+    // ===============================
+
+    const handleDocumentUpdate = (updatedDocument) => {
+
+        setDocuments(prevDocuments =>
+
+            prevDocuments.map(document =>
+
+                document.id === updatedDocument.id
+
+                    ? updatedDocument
+
+                    : document
+
+            )
+
+        );
+
+    };
+
+
+    // ===============================
+    // OPEN UPLOAD MODAL
+    // ===============================
+
+    const openUploadModal = () => {
+
+        setShowModal(true);
+
+    };
+
+
     return (
 
         <DashboardLayout>
 
             <div className="p-8">
 
-                {/* Header */}
+
+                {/* ===============================
+                    HEADER
+                =============================== */}
 
                 <div className="flex justify-between items-center mb-8">
 
@@ -55,23 +142,31 @@ function DocumentList() {
 
                     </h1>
 
-                    <button
 
-                        onClick={() => setShowModal(true)}
+                    {/* CUSTOMER ONLY */}
 
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2 transition"
+                    {isCustomer && (
 
-                    >
+                        <button
 
-                        <FaUpload />
+                            onClick={openUploadModal}
 
-                        Upload Document
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl"
 
-                    </button>
+                        >
+
+                            Upload Document
+
+                        </button>
+
+                    )}
 
                 </div>
 
-                {/* Description */}
+
+                {/* ===============================
+                    DESCRIPTION
+                =============================== */}
 
                 <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
 
@@ -81,80 +176,141 @@ function DocumentList() {
 
                     </h2>
 
-                    <p className="text-gray-600">
 
-                        Upload customer identity documents and policy documents.
-                        View and download uploaded files anytime.
+                    {/* CUSTOMER DESCRIPTION */}
 
-                    </p>
+                    {isCustomer && (
+
+                        <p className="text-gray-600">
+
+                            Upload customer identity documents and policy
+                            documents. View and download uploaded files anytime.
+
+                        </p>
+
+                    )}
+
+
+                    {/* AGENT DESCRIPTION */}
+
+                    {isAgent && (
+
+                        <p className="text-gray-600">
+
+                            Verify customer identity documents and policy
+                            documents. View and download uploaded files anytime.
+
+                        </p>
+
+                    )}
+
+
+                    {/* ADMIN DESCRIPTION */}
+
+                    {!isCustomer && !isAgent && (
+
+                        <p className="text-gray-600">
+
+                            View and manage customer identity and policy
+                            documents.
+
+                        </p>
+
+                    )}
 
                 </div>
 
-                {/* Documents */}
 
-                {
+                {/* ===============================
+                    DOCUMENTS
+                =============================== */}
 
-                    documents.length === 0 ?
+                {documents.length === 0 ? (
 
-                    (
+                    <div className="bg-white rounded-2xl shadow-md p-16 text-center">
 
-                        <div className="bg-white rounded-2xl shadow-md p-16 text-center">
+                        <h2 className="text-2xl font-bold text-slate-700">
 
-                            <h2 className="text-2xl font-bold text-slate-700">
+                            No Documents Available
 
-                                No Documents Available
+                        </h2>
 
-                            </h2>
+
+                        {/* CUSTOMER */}
+
+                        {isCustomer && (
+
+                            <>
+
+                                <p className="text-gray-500 mt-3">
+
+                                    Upload your first Identity or Policy
+                                    document.
+
+                                </p>
+
+
+                                <button
+
+                                    onClick={openUploadModal}
+
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl mt-5"
+
+                                >
+
+                                    Upload Document
+
+                                </button>
+
+                            </>
+
+                        )}
+
+
+                        {/* AGENT */}
+
+                        {isAgent && (
 
                             <p className="text-gray-500 mt-3">
 
-                                Upload your first Identity or Policy document.
+                                No customer documents are available for
+                                verification.
 
                             </p>
 
-                            <button
+                        )}
 
-                                onClick={() => setShowModal(true)}
+                    </div>
 
-                                className="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+                ) : (
 
-                            >
+                    <DocumentTable
 
-                                Upload Document
+                        documents={documents}
 
-                            </button>
+                        onDocumentUpdate={handleDocumentUpdate}
 
-                        </div>
+                    />
 
-                    )
+                )}
 
-                    :
-
-                    (
-
-                        <DocumentTable
-
-                            documents={documents}
-
-                        />
-
-                    )
-
-                }
 
             </div>
 
-            {
 
-                showModal &&
+            {/* ===============================
+                UPLOAD MODAL
+            =============================== */}
+
+            {showModal && (
 
                 <UploadDocumentModal
 
                     onClose={() => setShowModal(false)}
 
-                    onUpload={() => {
+                    onUpload={async () => {
 
-                        loadDocuments();
+                        await loadDocuments();
 
                         setShowModal(false);
 
@@ -162,12 +318,13 @@ function DocumentList() {
 
                 />
 
-            }
+            )}
 
         </DashboardLayout>
 
     );
 
 }
+
 
 export default DocumentList;

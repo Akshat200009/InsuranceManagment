@@ -84,10 +84,33 @@ const documentService = {
 
     return response.data;
   },
-   getMyDocuments: async () => {
+  getMyDocuments: async () => {
+    const response = await axios.get(`${BASE_URL}/my`, getAuthHeader());
 
-    const response = await axios.get(
-        `${BASE_URL}/my`,
+    return response.data;
+  },
+  viewDocument: async (documentId) => {
+    const response = await axios.get(`${BASE_URL}/view/${documentId}`, {
+      ...getAuthHeader(),
+      responseType: "blob",
+    });
+
+    return response;
+  },
+  verifyDocument: async (documentId) => {
+    const response = await axios.put(
+      `${BASE_URL}/${documentId}/verify`,
+      {},
+      getAuthHeader(),
+    );
+
+    return response.data;
+  },
+  rejectDocument: async (documentId) => {
+
+    const response = await axios.put(
+        `${BASE_URL}/${documentId}/reject`,
+        {},
         getAuthHeader()
     );
 

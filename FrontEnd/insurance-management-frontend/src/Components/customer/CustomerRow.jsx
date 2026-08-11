@@ -1,157 +1,82 @@
-import {
-    
-    FaEye,
-
-    FaEdit,
-
-    FaTrash
-
-} from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 
 const formatDate = (date) => {
+  if (!date) return "-";
 
-    if (!date) return "-";
+  return new Date(date).toLocaleDateString(
+    "en-GB",
 
-    return new Date(date).toLocaleDateString(
+    {
+      day: "2-digit",
 
-        "en-GB",
+      month: "short",
 
-        {
-
-            day: "2-digit",
-
-            month: "short",
-
-            year: "numeric"
-
-        }
-
-    );
-
+      year: "numeric",
+    },
+  );
 };
 
 const shortAddress = (address) => {
+  if (!address) return "-";
 
-    if (!address) return "-";
-
-    return address.length > 30
-
-        ?
-
-        address.substring(0, 30) + "..."
-
-        :
-
-        address;
-
+  return address.length > 30 ? address.substring(0, 30) + "..." : address;
 };
 
 function CustomerRow({
+  customer,
 
-    customer,
+  onView,
 
-    onView,
+  onEdit,
 
-    onEdit,
-
-    onDelete
-
+  onDelete,
 }) {
+  return (
+    <tr className="hover:bg-slate-50 transition">
+      <td className="px-6 py-4">{customer.id}</td>
 
-    return (
+      <td className="px-6 py-4 font-medium">{customer.name}</td>
 
-        <tr className="hover:bg-slate-50 transition">
+      <td className="px-6 py-4">{customer.email}</td>
 
-            <td className="px-6 py-4">
+      <td className="px-6 py-4">{customer.phone}</td>
 
-                {customer.id}
+      <td className="px-6 py-4 whitespace-nowrap">
+        {formatDate(customer.dob)}
+      </td>
 
-            </td>
-
-            <td className="px-6 py-4 font-medium">
-
-                {customer.name}
-
-            </td>
-
-            <td className="px-6 py-4">
-
-                {customer.email}
-
-            </td>
-
-            <td className="px-6 py-4">
-
-                {customer.phone}
-
-            </td>
-
-            <td className="px-6 py-4 whitespace-nowrap">
-
-                {formatDate(customer.dob)}
-
-            </td>
-
-            <td
-
-                className="px-6 py-4 max-w-xs truncate cursor-pointer"
-
-                title={customer.address}
-
-            >
-
-                {shortAddress(customer.address)}
-
-            </td>
-              <td className="px-6 py-4">
-
-    <div className="flex justify-center gap-3">
-
-        <button
-
+      <td
+        className="px-6 py-4 max-w-xs truncate cursor-pointer"
+        title={customer.address}
+      >
+        {shortAddress(customer.address)}
+      </td>
+      <td className="px-6 py-4">
+        <div className="flex justify-center gap-3">
+          <button
             onClick={() => onView(customer.id)}
-
             className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition"
-
-        >
-
+          >
             <FaEye />
+          </button>
 
-        </button>
-
-        <button
-
+          <button
             onClick={() => onEdit(customer.id)}
-
             className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition"
-
-        >
-
+          >
             <FaEdit />
+          </button>
 
-        </button>
-
-        <button
-
+          <button
             onClick={() => onDelete(customer)}
-
             className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition"
-
-        >
-
+          >
             <FaTrash />
-
-        </button>
-
-    </div>
-
-</td>
-
-
-        </tr>
-
-    );
-
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 }
 
 export default CustomerRow;
