@@ -16,11 +16,17 @@ function ClaimList() {
 
     const [filter, setFilter] = useState("PENDING");
 
+    const role = localStorage.getItem("role");
+
+    const isCustomer = role === "CUSTOMER";
+
+
     useEffect(() => {
 
         loadClaims();
 
-    }, [filter]);
+    }, [filter, role]);
+
 
     const loadClaims = async () => {
 
@@ -28,26 +34,47 @@ function ClaimList() {
 
             let response;
 
-            switch (filter) {
+            // ================= CUSTOMER =================
 
-                case "APPROVED":
+            if (isCustomer) {
 
-                    response =
-                        await claimService.getClaimsByStatus("APPROVED");
+                response =
+                    await claimService.getMyClaims();
 
-                    break;
+            }
 
-                case "REJECTED":
+            // ================= ADMIN / AGENT =================
 
-                    response =
-                        await claimService.getClaimsByStatus("REJECTED");
+            else {
 
-                    break;
+                switch (filter) {
 
-                default:
+                    case "APPROVED":
 
-                    response =
-                        await claimService.getPendingClaims();
+                        response =
+                            await claimService.getClaimsByStatus(
+                                "APPROVED"
+                            );
+
+                        break;
+
+
+                    case "REJECTED":
+
+                        response =
+                            await claimService.getClaimsByStatus(
+                                "REJECTED"
+                            );
+
+                        break;
+
+
+                    default:
+
+                        response =
+                            await claimService.getPendingClaims();
+
+                }
 
             }
 
@@ -59,11 +86,16 @@ function ClaimList() {
 
             console.log(error);
 
-            toast.error("Unable to load claims");
+            toast.error(
+                "Unable to load claims"
+            );
 
         }
 
     };
+
+
+    // ================= APPROVE =================
 
     const handleApprove = async (claim) => {
 
@@ -95,12 +127,21 @@ function ClaimList() {
 
         });
 
-        if (!result.isConfirmed) return;
+
+        if (!result.isConfirmed) {
+
+            return;
+
+        }
+
 
         try {
 
             const updatedClaim =
-                await claimService.approveClaim(claim.id);
+                await claimService.approveClaim(
+                    claim.id
+                );
+
 
             setClaims(prev =>
                 prev.map(c =>
@@ -109,6 +150,7 @@ function ClaimList() {
                         : c
                 )
             );
+
 
             Swal.fire({
 
@@ -128,6 +170,8 @@ function ClaimList() {
 
         catch (error) {
 
+            console.log(error);
+
             Swal.fire({
 
                 icon: "error",
@@ -143,6 +187,9 @@ function ClaimList() {
         }
 
     };
+
+
+    // ================= REJECT =================
 
     const handleReject = async (claim) => {
 
@@ -174,12 +221,21 @@ function ClaimList() {
 
         });
 
-        if (!result.isConfirmed) return;
+
+        if (!result.isConfirmed) {
+
+            return;
+
+        }
+
 
         try {
 
             const updatedClaim =
-                await claimService.rejectClaim(claim.id);
+                await claimService.rejectClaim(
+                    claim.id
+                );
+
 
             setClaims(prev =>
                 prev.map(c =>
@@ -188,6 +244,7 @@ function ClaimList() {
                         : c
                 )
             );
+
 
             Swal.fire({
 
@@ -207,6 +264,8 @@ function ClaimList() {
 
         catch (error) {
 
+            console.log(error);
+
             Swal.fire({
 
                 icon: "error",
@@ -223,25 +282,48 @@ function ClaimList() {
 
     };
 
+
     return (
 
         <DashboardLayout>
 
             <div className="p-8">
 
-                {/* Heading */}
+                {/* ================= HEADER ================= */}
 
                 <div className="flex justify-between items-center mb-8">
 
-                    <h1 className="text-3xl font-bold">
+                    <div>
 
-                        Claim Management
+                        <h1 className="text-3xl font-bold">
 
-                    </h1>
+                            {isCustomer
+                                ? "My Claims"
+                                : "Claim Management"
+                            }
+
+                        </h1>
+
+                        {isCustomer && (
+
+                            <p className="text-gray-500 mt-2">
+
+                                View and track your insurance claims
+
+                            </p>
+
+                        )}
+
+                    </div>
+
+
+                    {/* Customer + Admin can submit */}
 
                     <button
 
-                        onClick={() => navigate("/claims/add")}
+                        onClick={() =>
+                            navigate("/claims/add")
+                        }
 
                         className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
 
@@ -255,77 +337,103 @@ function ClaimList() {
 
                 </div>
 
-                {/* Filters */}
 
-                <div className="flex gap-4 mb-8">
+                {/* ================= ADMIN / AGENT FILTERS ================= */}
 
-                    <button
+                {!isCustomer && (
 
-                        onClick={() => setFilter("PENDING")}
+                    <div className="flex gap-4 mb-8">
 
-                        className={`px-5 py-2 rounded-lg transition ${
-                            filter === "PENDING"
-                                ? "bg-yellow-500 text-white"
-                                : "border hover:bg-gray-100"
-                        }`}
+                        <button
 
-                    >
+                            onClick={() =>
+                                setFilter("PENDING")
+                            }
 
-                        Pending
+                            className={`px-5 py-2 rounded-lg transition ${
+                                filter === "PENDING"
+                                    ? "bg-yellow-500 text-white"
+                                    : "border hover:bg-gray-100"
+                            }`}
 
-                    </button>
+                        >
 
-                    <button
+                            Pending
 
-                        onClick={() => setFilter("APPROVED")}
+                        </button>
 
-                        className={`px-5 py-2 rounded-lg transition ${
-                            filter === "APPROVED"
-                                ? "bg-green-600 text-white"
-                                : "border hover:bg-gray-100"
-                        }`}
 
-                    >
+                        <button
 
-                        Approved
+                            onClick={() =>
+                                setFilter("APPROVED")
+                            }
 
-                    </button>
+                            className={`px-5 py-2 rounded-lg transition ${
+                                filter === "APPROVED"
+                                    ? "bg-green-600 text-white"
+                                    : "border hover:bg-gray-100"
+                            }`}
 
-                    <button
+                        >
 
-                        onClick={() => setFilter("REJECTED")}
+                            Approved
 
-                        className={`px-5 py-2 rounded-lg transition ${
-                            filter === "REJECTED"
-                                ? "bg-red-600 text-white"
-                                : "border hover:bg-gray-100"
-                        }`}
+                        </button>
 
-                    >
 
-                        Rejected
+                        <button
 
-                    </button>
+                            onClick={() =>
+                                setFilter("REJECTED")
+                            }
 
-                </div>
+                            className={`px-5 py-2 rounded-lg transition ${
+                                filter === "REJECTED"
+                                    ? "bg-red-600 text-white"
+                                    : "border hover:bg-gray-100"
+                            }`}
 
-                {/* Table */}
+                        >
+
+                            Rejected
+
+                        </button>
+
+                    </div>
+
+                )}
+
+
+                {/* ================= TABLE ================= */}
 
                 <ClaimTable
 
                     claims={claims}
 
-                    onApprove={handleApprove}
+                    onApprove={
+                        isCustomer
+                            ? undefined
+                            : handleApprove
+                    }
 
-                    onReject={handleReject}
+                    onReject={
+                        isCustomer
+                            ? undefined
+                            : handleReject
+                    }
 
                 />
 
-                {/* Count */}
+
+                {/* ================= COUNT ================= */}
 
                 <h2 className="text-2xl font-semibold mt-8 text-red-500">
 
-                    Claim Count : {claims.length}
+                    {isCustomer
+                        ? `My Claim Count : ${claims.length}`
+                        : `Claim Count : ${claims.length}`
+                    }
 
                 </h2>
 

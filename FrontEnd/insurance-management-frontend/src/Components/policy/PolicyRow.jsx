@@ -1,19 +1,14 @@
-import { FaRedo, FaBan } from "react-icons/fa";
+import { FaRedo, FaBan, FaEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (date) => {
   if (!date) return "-";
 
-  return new Date(date).toLocaleDateString(
-    "en-GB",
-
-    {
-      day: "2-digit",
-
-      month: "short",
-
-      year: "numeric",
-    },
-  );
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 const getStatusColor = (status) => {
@@ -34,18 +29,31 @@ const getStatusColor = (status) => {
 
 function PolicyRow({
   policy,
-
   onRenew,
-
   onCancel,
 }) {
+
+  const role = localStorage.getItem("role");
+
+  const navigate = useNavigate();
+
   return (
-    <tr className="hover:bg-slate-50 transition">
-      <td className="px-6 py-4 font-medium">{policy.policyNumber}</td>
 
-      <td className="px-6 py-4">{policy.customerName}</td>
+    <tr className="border-b hover:bg-gray-50">
 
-      <td className="px-6 py-4">{policy.policyType}</td>
+      <td className="px-6 py-4 font-medium">
+        {policy.policyNumber}
+      </td>
+
+      {role !== "CUSTOMER" && (
+        <td className="px-6 py-4">
+          {policy.customerName}
+        </td>
+      )}
+
+      <td className="px-6 py-4">
+        {policy.policyType}
+      </td>
 
       <td className="px-6 py-4">
         ₹ {policy.premiumAmount.toLocaleString("en-IN")}
@@ -68,40 +76,64 @@ function PolicyRow({
       </td>
 
       <td className="px-6 py-4">
+
         <div className="flex justify-center gap-3">
-          {policy.status === "EXPIRED" && (
+
+          {/* CUSTOMER */}
+
+          {role === "CUSTOMER" && (
+
             <button
-              onClick={() => onRenew(policy)}
-              className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition"
-              title="Renew Policy"
+              onClick={() => navigate(`/policies/${policy.id}`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg"
+              title="View Policy"
             >
-              <FaRedo />
+              <FaEye />
             </button>
+
           )}
 
-          {policy.status === "ACTIVE" && (
-            <button
-              onClick={() => onCancel(policy)}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition"
-              title="Cancel Policy"
-            >
-              <FaBan />
-            </button>
+          {/* ADMIN / AGENT */}
+
+          {role !== "CUSTOMER" && (
+            <>
+              {policy.status === "EXPIRED" && (
+                <button
+                  onClick={() => onRenew(policy)}
+                  className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg"
+                  title="Renew Policy"
+                >
+                  <FaRedo />
+                </button>
+              )}
+
+              {policy.status === "ACTIVE" && (
+                <button
+                  onClick={() => onCancel(policy)}
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg"
+                  title="Cancel Policy"
+                >
+                  <FaBan />
+                </button>
+              )}
+
+              {policy.status === "CANCELLED" && (
+                <button
+                  onClick={() => onRenew(policy)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
+                >
+                  Renew
+                </button>
+              )}
+            </>
           )}
 
-          {policy.status === "CANCELLED" && (
-            <span className="text-gray-400 text-sm">
-              <button
-                onClick={() => onRenew(policy)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
-              >
-                Renew
-              </button>
-            </span>
-          )}
         </div>
+
       </td>
+
     </tr>
+
   );
 }
 

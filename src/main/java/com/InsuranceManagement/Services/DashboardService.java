@@ -4,6 +4,6 @@ import com.InsuranceManagement.DTO.DashboardResponse;
 
 public interface DashboardService {
 
-    DashboardResponse getDashboard();
+    DashboardResponse getDashboard(String email, String role);
 
 }

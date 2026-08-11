@@ -12,6 +12,7 @@ public interface DocumentService {
 
     String uploadIdentityDocument(Long customerId, MultipartFile file);
     List<DocumentResponse> getAllDocuments();
+    List<DocumentResponse> getMyDocuments();
     List<DocumentResponse> getDocumentsByCustomer(Long customerId , DocumentType documentType);
     String uploadPolicyDocument(Long customerId, MultipartFile file);
     Resource downloadDocument(Long documentId);

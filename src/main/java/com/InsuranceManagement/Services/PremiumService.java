@@ -18,8 +18,11 @@ public interface PremiumService {
     List<PremiumResponse> getPaymentHistory(Long policyId);
     List<PremiumResponse> getOverduePremiums();
     List<PremiumResponse> getAllPremiums();
+    List<PremiumResponse> getMyPremiums();
+    PremiumResponse getMyPremiumById(Long id);
     PremiumResponse getPremiumById(Long id);
     PremiumStatisticsResponse getPremiumStatistics();
+    PremiumResponse payPremium(Long premiumId);
     
 
 }

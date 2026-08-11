@@ -84,6 +84,15 @@ const documentService = {
 
     return response.data;
   },
+   getMyDocuments: async () => {
+
+    const response = await axios.get(
+        `${BASE_URL}/my`,
+        getAuthHeader()
+    );
+
+    return response.data;
+},
 };
 
 export default documentService;

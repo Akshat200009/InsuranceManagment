@@ -15,8 +15,11 @@ public class Premium {
     @ManyToOne
     @JoinColumn(name = "policy_id", nullable = false)
     private Policy policy;
+    
+    @ManyToOne
+    private Customer customer;
 
-    @Column(nullable = false)
+	@Column(nullable = false)
     private LocalDate paymentDate;
 
     @Column(nullable = false)
@@ -61,6 +64,13 @@ public class Premium {
         this.paymentDate = paymentDate;
     }
 
+    public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
     public Double getAmount() {
         return amount;
     }

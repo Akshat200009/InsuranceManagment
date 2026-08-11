@@ -22,17 +22,25 @@ import com.InsuranceManagement.Entities.Document;
 import com.InsuranceManagement.Entities.DocumentType;
 import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.DocumentRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.InsuranceManagement.Entities.User;
+import com.InsuranceManagement.Repository.UserRepository;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
 
 	private final DocumentRepository documentRepository;
 	private final CustomerRepository customerRepository;
+	private final UserRepository userRepository;
 
-	public DocumentServiceImpl(DocumentRepository documentRepository, CustomerRepository customerRepository) {
+	public DocumentServiceImpl(
+	        DocumentRepository documentRepository,
+	        CustomerRepository customerRepository,
+	        UserRepository userRepository) {
 
-		this.documentRepository = documentRepository;
-		this.customerRepository = customerRepository;
+	    this.documentRepository = documentRepository;
+	    this.customerRepository = customerRepository;
+	    this.userRepository = userRepository;
 	}
 
 	private DocumentResponse convertToResponse(Document docs) {
@@ -49,7 +57,21 @@ public class DocumentServiceImpl implements DocumentService {
 
 		return response;
 	}
+	private Customer getLoggedInCustomer() {
 
+	    String email = SecurityContextHolder
+	            .getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    User user = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new RuntimeException("User not found"));
+
+	    return customerRepository.findByUser(user)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Customer not found"));
+	}
 	@Override
 	public String uploadIdentityDocument(Long customerId, MultipartFile file) {
 
@@ -89,11 +111,11 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public List<DocumentResponse> getDocumentsByCustomer(Long customerId, DocumentType documentType) {
 
-		List<Document> list = documentRepository.findByCustomerId(customerId);
+//		List<Document> list = documentRepository.findByCustomerId(customerId);
 
 		List<Document> documents = documentRepository.findByCustomerIdAndDocumentType(customerId, documentType);
 
-		return list.stream().map(this::convertToResponse).toList();
+		return documents.stream().map(this::convertToResponse).toList();
 	}
 
 	@Override
@@ -163,6 +185,18 @@ public class DocumentServiceImpl implements DocumentService {
 	public List<DocumentResponse> getAllDocuments() {
 
 	    return documentRepository.findAll()
+	            .stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
+
+	@Override
+	public List<DocumentResponse> getMyDocuments() {
+
+	    Customer customer = getLoggedInCustomer();
+
+	    return documentRepository
+	            .findByCustomerId(customer.getId())
 	            .stream()
 	            .map(this::convertToResponse)
 	            .toList();

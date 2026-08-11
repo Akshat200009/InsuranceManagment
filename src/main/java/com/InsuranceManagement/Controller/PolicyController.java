@@ -110,6 +110,30 @@ public class PolicyController {
                 policyService.getPoliciesByCustomer(customerId)
         );
     }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my")
+    public ResponseEntity<List<PolicyResponse>> getMyPolicies() {
+
+        return ResponseEntity.ok(policyService.getMyPolicies());
+    }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my/active")
+    public ResponseEntity<List<PolicyResponse>> getMyActivePolicies() {
+
+        return ResponseEntity.ok(
+                policyService.getMyActivePolicies()
+        );
+    }
+
     
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my/{policyId}")
+    public ResponseEntity<PolicyResponse> getMyPolicy(
+            @PathVariable Long policyId) {
+
+        return ResponseEntity.ok(
+                policyService.getMyPolicy(policyId)
+        );
+    }
     
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.InsuranceManagement.DTO.CustomerResponse;
 import com.InsuranceManagement.Entities.Policy;
 import com.InsuranceManagement.Entities.PolicyStatus;
 
@@ -44,5 +45,21 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 		       FROM Policy p
 		       """)
 		Double getTotalPremium();
+	
+	Long countByCustomerId(Long customerId);
+	
+	@Query("""
+		       SELECT COALESCE(SUM(p.premiumAmount),0)
+		       FROM Policy p
+		       WHERE p.customer.id = :customerId
+		       """)
+		Double getTotalPremiumByCustomerId(Long customerId);
+	
+	List<Policy> findByCustomerIdAndStatus(
+	        Long customerId,
+	        PolicyStatus status
+	);
+	
+	
 	
 }

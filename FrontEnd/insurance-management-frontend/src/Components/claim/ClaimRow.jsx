@@ -1,75 +1,170 @@
-import { FaCheck, FaTimes, FaEye } from "react-icons/fa";
+import {
+    FaCheck,
+    FaTimes,
+    FaEye
+} from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 
 function ClaimRow({
-  claim,
-
-  onApprove,
-
-  onReject,
+    claim,
+    onApprove,
+    onReject
 }) {
-  const navigate = useNavigate();
-  const getStatusColor = () => {
-    switch (claim.status) {
-      case "APPROVED":
-        return "bg-green-100 text-green-700";
 
-      case "REJECTED":
-        return "bg-red-100 text-red-700";
+    const navigate = useNavigate();
 
-      default:
-        return "bg-yellow-100 text-yellow-700";
-    }
-  };
+    const role = localStorage.getItem("role");
 
-  return (
-    <tr className="border-b hover:bg-gray-50">
-      <td className="p-4">{claim.policyNumber}</td>
+    const isAdminOrAgent =
+        role === "ADMIN" ||
+        role === "AGENT";
 
-      <td className="p-4">₹{claim.claimAmount.toLocaleString()}</td>
 
-      <td className="p-4">{claim.reason}</td>
+    const getStatusColor = () => {
 
-      <td className="p-4">{claim.submissionDate}</td>
+        switch (claim.status) {
 
-      <td className="p-4">
-        <span
-          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor()}`}
-        >
-          {claim.status}
-        </span>
-      </td>
+            case "APPROVED":
+                return "bg-green-100 text-green-700";
 
-      <td className="p-4 text-center">
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => navigate(`/claims/${claim.id}`)}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg"
-          >
-            <FaEye />
-          </button>
+            case "REJECTED":
+                return "bg-red-100 text-red-700";
 
-          {claim.status === "PENDING" && (
-            <>
-              <button
-                onClick={() => onApprove(claim)}
-                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg"
-              >
-                <FaCheck />
-              </button>
+            default:
+                return "bg-yellow-100 text-yellow-700";
 
-              <button
-                onClick={() => onReject(claim)}
-                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg"
-              >
-                <FaTimes />
-              </button>
-            </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
+        }
+
+    };
+
+
+    return (
+
+        <tr className="border-b hover:bg-gray-50 transition">
+
+            {/* Policy Number */}
+
+            <td className="p-4 font-medium">
+
+                {claim.policyNumber}
+
+            </td>
+
+
+            {/* Claim Amount */}
+
+            <td className="p-4">
+
+                ₹{claim.claimAmount.toLocaleString("en-IN")}
+
+            </td>
+
+
+            {/* Reason */}
+
+            <td className="p-4 max-w-[250px]">
+
+                <span
+                    className="line-clamp-2"
+                    title={claim.reason}
+                >
+                    {claim.reason}
+                </span>
+
+            </td>
+
+
+            {/* Submission Date */}
+
+            <td className="p-4 whitespace-nowrap">
+
+                {claim.submissionDate}
+
+            </td>
+
+
+            {/* Status */}
+
+            <td className="p-4">
+
+                <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor()}`}
+                >
+                    {claim.status}
+                </span>
+
+            </td>
+
+
+            {/* Actions */}
+
+            <td className="p-4">
+
+                <div className="flex justify-center items-center gap-2">
+
+                    {/* View - Everyone */}
+
+                    <button
+                        onClick={() =>
+                            navigate(`/claims/${claim.id}`)
+                        }
+                        className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition"
+                        title="View Claim"
+                    >
+
+                        <FaEye />
+
+                    </button>
+
+
+                    {/* Admin / Agent Only */}
+
+                    {isAdminOrAgent &&
+                        claim.status === "PENDING" && (
+
+                            <>
+
+                                {/* Approve */}
+
+                                <button
+                                    onClick={() =>
+                                        onApprove(claim)
+                                    }
+                                    className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition"
+                                    title="Approve Claim"
+                                >
+
+                                    <FaCheck />
+
+                                </button>
+
+
+                                {/* Reject */}
+
+                                <button
+                                    onClick={() =>
+                                        onReject(claim)
+                                    }
+                                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition"
+                                    title="Reject Claim"
+                                >
+
+                                    <FaTimes />
+
+                                </button>
+
+                            </>
+
+                        )}
+
+                </div>
+
+            </td>
+
+        </tr>
+
+    );
 }
 
 export default ClaimRow;

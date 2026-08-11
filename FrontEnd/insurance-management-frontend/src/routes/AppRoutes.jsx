@@ -97,7 +97,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/policies/:id" element={<PolicyDetails />} />
+      <Route path="/policies/:id" element={ <DashboardLayout><PolicyDetails /></DashboardLayout>} />
 
       <Route path="/claims" element={<ClaimList />} />
 

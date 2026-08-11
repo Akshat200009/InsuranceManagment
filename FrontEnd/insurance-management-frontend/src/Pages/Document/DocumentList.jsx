@@ -23,7 +23,7 @@ function DocumentList() {
         try {
 
             const response =
-                await documentService.getAllDocuments();
+                await documentService.getMyDocuments();
 
             setDocuments(response);
 

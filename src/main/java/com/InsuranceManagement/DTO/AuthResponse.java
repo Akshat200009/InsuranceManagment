@@ -6,13 +6,21 @@ public class AuthResponse {
 	private String role;
 	private String fullName;
 	private String message;
+	private Long customerId;
 
-	public AuthResponse(String token, String role, String fullName,String message) {
-		super();
-		this.token = token;
-		this.role=role;
-		this.fullName=fullName;
-		this.message = message;
+	
+	public AuthResponse(
+	        String token,
+	        String role,
+	        String fullName,
+	        Long customerId,
+	        String message) {
+
+	    this.token = token;
+	    this.role = role;
+	    this.fullName = fullName;
+	    this.customerId = customerId;
+	    this.message = message;
 	}
 	
 	//Default Constructor
@@ -41,6 +49,14 @@ public class AuthResponse {
 	public void setRole(String role) {
 		this.role = role;
 	}
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -48,4 +64,5 @@ public class AuthResponse {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
 }

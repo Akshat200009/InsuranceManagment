@@ -22,16 +22,33 @@ function AddClaim() {
 
         try {
 
+            // Get only logged-in customer's policies
             const response =
-                await policyService.getActivePolicies();
+                await policyService.getMyPolicies();
 
-            setPolicies(response);
+            console.log("MY POLICIES:", response);
+
+            // Only ACTIVE policies can be used for claim
+            const activePolicies = response.filter(
+                (policy) => policy.status === "ACTIVE"
+            );
+
+            setPolicies(activePolicies);
 
         }
-
         catch (error) {
 
-            console.log(error);
+            console.error("POLICY ERROR:", error);
+            console.error("STATUS:", error.response?.status);
+            console.error("DATA:", error.response?.data);
+
+            Swal.fire({
+                icon: "error",
+                title: "Unable to Load Policies",
+                text:
+                    error.response?.data?.message ||
+                    "Unable to load your active policies"
+            });
 
         }
 
@@ -61,35 +78,41 @@ function AddClaim() {
 
         }
 
-      catch (error) {
+        catch (error) {
 
-    if (error.response?.status === 400) {
+            console.error("CLAIM ERROR:", error);
 
-        const validationErrors = {};
+            if (error.response?.status === 400) {
 
-        error.response.data.forEach((err) => {
+                const validationErrors = {};
 
-            validationErrors[err.field] = err.defaultMessage;
+                if (Array.isArray(error.response.data)) {
 
-        });
+                    error.response.data.forEach((err) => {
 
-        return validationErrors;
+                        validationErrors[err.field] =
+                            err.defaultMessage;
 
-    }
+                    });
 
-    Swal.fire({
+                    return validationErrors;
+                }
 
-        icon: "error",
+            }
 
-        title: "Failed",
+            Swal.fire({
 
-        text:
-            error.response?.data?.message ||
-            "Unable to submit claim"
+                icon: "error",
 
-    });
+                title: "Failed",
 
-}
+                text:
+                    error.response?.data?.message ||
+                    "Unable to submit claim"
+
+            });
+
+        }
 
     };
 

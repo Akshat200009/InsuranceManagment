@@ -16,7 +16,6 @@ import authService from "../Services/authService";
 function Login() {
 
     const navigate = useNavigate();
-
     const { login } = useAuth();
 
     const [email, setEmail] = useState("");
@@ -43,21 +42,39 @@ function Login() {
             setLoading(true);
 
             const response = await authService.login({
-
                 email,
                 password
-
             });
 
-            console.log("Backend Response : ", response);
+            console.log("Backend Response :", response);
 
+            /*
+             * Save customerId only for CUSTOMER
+             */
+            if (
+                response.role === "CUSTOMER" &&
+                response.customerId
+            ) {
+
+                localStorage.setItem(
+                    "customerId",
+                    response.customerId
+                );
+
+            }
+
+            /*
+             * Existing authentication
+             */
             login(
                 response.token,
                 response.role,
                 response.fullName
             );
 
-            toast.success(response.message);
+            toast.success(
+                response.message || "Login Successful"
+            );
 
             navigate("/dashboard");
 
@@ -68,17 +85,26 @@ function Login() {
 
             if (error.response) {
 
-                console.log("Backend Error :", error.response.data);
+                console.log(
+                    "Backend Error :",
+                    error.response.data
+                );
 
-                toast.error(error.response.data.message);
+                toast.error(
+                    error.response.data?.message ||
+                    "Login failed"
+                );
 
-            }
-            else {
+            } else {
 
-                console.log("Javascript Error :", error.message);
+                console.log(
+                    "Javascript Error :",
+                    error.message
+                );
 
-                toast.error(error.message);
-
+                toast.error(
+                    error.message || "Something went wrong"
+                );
             }
 
         }
@@ -87,7 +113,6 @@ function Login() {
             setLoading(false);
 
         }
-
     };
 
     return (
@@ -168,7 +193,9 @@ function Login() {
                                 type="email"
                                 placeholder="Enter your email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) =>
+                                    setEmail(e.target.value)
+                                }
                                 className="w-full pl-12 border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-700 outline-none"
                             />
 
@@ -191,20 +218,31 @@ function Login() {
                             <FaLock className="absolute left-4 top-4 text-gray-400" />
 
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={
+                                    showPassword
+                                        ? "text"
+                                        : "password"
+                                }
                                 placeholder="Enter Password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) =>
+                                    setPassword(e.target.value)
+                                }
                                 className="w-full pl-12 pr-12 border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-700 outline-none"
                             />
 
                             <button
                                 type="button"
                                 className="absolute right-4 top-4"
-                                onClick={() => setShowPassword(!showPassword)}
+                                onClick={() =>
+                                    setShowPassword(!showPassword)
+                                }
                             >
 
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                {showPassword
+                                    ? <FaEyeSlash />
+                                    : <FaEye />
+                                }
 
                             </button>
 
@@ -212,13 +250,18 @@ function Login() {
 
                     </div>
 
+                    {/* Login Button */}
+
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition-all"
+                        className="w-full bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                     >
 
-                        {loading ? "Logging In..." : "Login"}
+                        {loading
+                            ? "Logging In..."
+                            : "Login"
+                        }
 
                     </button>
 

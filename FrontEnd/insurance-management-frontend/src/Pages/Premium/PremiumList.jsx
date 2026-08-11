@@ -12,6 +12,8 @@ function PremiumList() {
 
     const navigate = useNavigate();
 
+    const role = localStorage.getItem("role");
+
     const [premiums, setPremiums] = useState([]);
 
     const [statistics, setStatistics] = useState({
@@ -30,7 +32,10 @@ function PremiumList() {
 
         loadPremiums();
 
-        loadStatistics();
+        // Statistics only for Admin
+        if (role === "ADMIN") {
+            loadStatistics();
+        }
 
     }, []);
 
@@ -38,7 +43,17 @@ function PremiumList() {
 
         try {
 
-            const response = await premiumService.getAllPremiums();
+            let response;
+
+            if (role === "CUSTOMER") {
+
+                response = await premiumService.getMyPremiums();
+
+            } else {
+
+                response = await premiumService.getAllPremiums();
+
+            }
 
             setPremiums(response);
 
@@ -85,71 +100,85 @@ function PremiumList() {
 
                     <h1 className="text-3xl font-bold">
 
-                        Premium Management
+                        {role === "CUSTOMER"
+                            ? "My Premiums"
+                            : "Premium Management"}
 
                     </h1>
 
-                    <button
+                    {/* Record Payment */}
 
-                        onClick={() => navigate("/premiums/add")}
+                    {role !== "CUSTOMER" && (
 
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
+                        <button
 
-                    >
+                            onClick={() =>
+                                navigate("/premiums/add")
+                            }
 
-                        <FaPlus />
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
 
-                        Record Payment
+                        >
 
-                    </button>
+                            <FaPlus />
+
+                            Record Payment
+
+                        </button>
+
+                    )}
 
                 </div>
 
                 {/* Statistics */}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                {role !== "CUSTOMER" && (
 
-                    <DashboardCard
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-                        title="Total Collection"
+                        <DashboardCard
 
-                        value={`₹${statistics.totalCollection.toLocaleString()}`}
+                            title="Total Collection"
 
-                        color="border-yellow-500"
+                            value={`₹${statistics.totalCollection.toLocaleString("en-IN")}`}
 
-                    />
+                            color="border-yellow-500"
 
-                    <DashboardCard
+                        />
 
-                        title="Paid"
+                        <DashboardCard
 
-                        value={statistics.paidPremiums}
+                            title="Paid"
 
-                        color="border-green-600"
+                            value={statistics.paidPremiums}
 
-                    />
+                            color="border-green-600"
 
-                    <DashboardCard
+                        />
 
-                        title="Pending"
+                        <DashboardCard
 
-                        value={statistics.pendingPremiums}
+                            title="Pending"
 
-                        color="border-blue-600"
+                            value={statistics.pendingPremiums}
 
-                    />
+                            color="border-blue-600"
 
-                    <DashboardCard
+                        />
 
-                        title="Overdue"
+                        <DashboardCard
 
-                        value={statistics.overduePremiums}
+                            title="Overdue"
 
-                        color="border-red-600"
+                            value={statistics.overduePremiums}
 
-                    />
+                            color="border-red-600"
 
-                </div>
+                        />
+
+                    </div>
+
+                )}
 
                 {/* Premium Table */}
 
@@ -163,9 +192,19 @@ function PremiumList() {
 
                                 <h2 className="text-2xl font-semibold">
 
-                                    No Premium Records Found
+                                    {role === "CUSTOMER"
+                                        ? "No Premium Records Found"
+                                        : "No Premium Records Found"}
 
                                 </h2>
+
+                                <p className="text-gray-500 mt-2">
+
+                                    {role === "CUSTOMER"
+                                        ? "Your premium payment records will appear here."
+                                        : "Premium payment records will appear here."}
+
+                                </p>
 
                             </div>
 

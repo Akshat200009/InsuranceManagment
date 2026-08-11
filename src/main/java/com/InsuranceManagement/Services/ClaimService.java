@@ -21,6 +21,9 @@ public interface ClaimService {
 	
 	List<ClaimResponse> getClaimsByStatus(ClaimStatus status);
 	ClaimResponse getClaimById(Long claimId);
+	List<ClaimResponse> getMyClaims();
+
+	ClaimResponse getMyClaimById(Long claimId);
 	
 	
 	

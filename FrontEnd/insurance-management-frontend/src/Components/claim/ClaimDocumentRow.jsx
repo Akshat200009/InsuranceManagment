@@ -8,58 +8,73 @@ import claimDocumentService
 
 function ClaimDocumentRow({ document }) {
 
-    const downloadDocument = async () => {
+ const downloadDocument = async () => {
 
-        try {
+    try {
 
-            const response =
-                await claimDocumentService.downloadDocument(document.id);
+        const response =
+            await claimDocumentService.downloadDocument(document.id);
 
-            const url = window.URL.createObjectURL(
-                new Blob([response.data])
-            );
+        const contentType =
+            response.headers["content-type"] || document.fileType;
 
-            const link =
-                window.document.createElement("a");
+        const blob = new Blob(
+            [response.data],
+            { type: contentType }
+        );
 
-            link.href = url;
+        const url =
+            window.URL.createObjectURL(blob);
 
-            link.download = document.fileName;
+        const link =
+            window.document.createElement("a");
 
-            link.click();
+        link.href = url;
+        link.download = document.fileName;
 
-        }
+        window.document.body.appendChild(link);
 
-        catch (error) {
+        link.click();
 
-            console.log(error);
+        link.remove();
 
-        }
+        window.URL.revokeObjectURL(url);
 
-    };
+    } catch (error) {
 
-    const viewDocument = async () => {
+        console.log(error);
 
-        try {
+    }
 
-            const response =
-                await claimDocumentService.downloadDocument(document.id);
+};
 
-            const url = window.URL.createObjectURL(
-                new Blob([response.data])
-            );
+ const viewDocument = async () => {
 
-            window.open(url);
+    try {
 
-        }
+        const response =
+            await claimDocumentService.downloadDocument(document.id);
 
-        catch (error) {
+        const contentType =
+            response.headers["content-type"] || document.fileType;
 
-            console.log(error);
+        const blob = new Blob(
+            [response.data],
+            { type: contentType }
+        );
 
-        }
+        const url =
+            window.URL.createObjectURL(blob);
 
-    };
+        window.open(url, "_blank");
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+};
 
     return (
 

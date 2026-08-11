@@ -12,6 +12,8 @@ import com.InsuranceManagement.Entities.DocumentType;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
    
 	 List<Document> findByCustomerId(Long customerId);
+	 
+	 Long countByCustomerId(Long customerId);
 
 	    List<Document> findByCustomerIdAndDocumentType(
 	            Long customerId,

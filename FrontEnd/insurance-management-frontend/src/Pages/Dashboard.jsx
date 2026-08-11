@@ -10,7 +10,8 @@ import {
     FaUsers,
     FaFileContract,
     FaMoneyBillWave,
-    FaClipboardList
+    FaClipboardList,
+    FaFolderOpen
 } from "react-icons/fa";
 
 function Dashboard() {
@@ -22,15 +23,11 @@ function Dashboard() {
     const actions = quickActions[role] || [];
 
     const [dashboard, setDashboard] = useState({
-
         customerCount: 0,
-
         policyCount: 0,
-
         claimCount: 0,
-
-        totalPremium: 0
-
+        totalPremium: 0,
+        documentCount: 0
     });
 
     useEffect(() => {
@@ -43,12 +40,12 @@ function Dashboard() {
 
         try {
 
-            const response = await dashboardService.getDashboard();
+            const response =
+                await dashboardService.getDashboard();
 
             setDashboard(response);
 
         }
-
         catch (error) {
 
             console.log(error);
@@ -63,7 +60,9 @@ function Dashboard() {
 
         <>
 
-            {/* Welcome */}
+            {/* ========================= */}
+            {/* WELCOME */}
+            {/* ========================= */}
 
             <h1 className="text-3xl font-bold text-slate-800">
 
@@ -87,101 +86,346 @@ function Dashboard() {
 
             </p>
 
-            {/* Dashboard Cards */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+            {/* ================================================= */}
+            {/* CUSTOMER DASHBOARD */}
+            {/* ================================================= */}
 
-                <DashboardCard
+            {role === "CUSTOMER" && (
 
-                    title="Customers"
+                <>
 
-                    value={dashboard.customerCount}
+                    {/* Customer Cards */}
 
-                    color="border-blue-600"
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
 
-                    icon={<FaUsers className="text-blue-600" />}
+                        <DashboardCard
+                            title="My Policies"
+                            value={dashboard.policyCount}
+                            color="border-green-600"
+                            icon={
+                                <FaFileContract
+                                    className="text-green-600"
+                                />
+                            }
+                        />
 
-                />
+                        <DashboardCard
+                            title="My Claims"
+                            value={dashboard.claimCount}
+                            color="border-red-600"
+                            icon={
+                                <FaClipboardList
+                                    className="text-red-600"
+                                />
+                            }
+                        />
 
-                <DashboardCard
+                        <DashboardCard
+                            title="Total Premium"
+                            value={`₹${dashboard.totalPremium?.toLocaleString("en-IN")}`}
+                            color="border-yellow-500"
+                            icon={
+                                <FaMoneyBillWave
+                                    className="text-yellow-500"
+                                />
+                            }
+                        />
 
-                    title="Policies"
+                        <DashboardCard
+                            title="My Documents"
+                            value={dashboard.documentCount}
+                            color="border-blue-600"
+                            icon={
+                                <FaFolderOpen
+                                    className="text-blue-600"
+                                />
+                            }
+                        />
 
-                    value={dashboard.policyCount}
+                    </div>
 
-                    color="border-green-600"
 
-                    icon={<FaFileContract className="text-green-600" />}
+                    {/* Customer Activities */}
 
-                />
+                    <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
 
-                <DashboardCard
+                        <h2 className="text-2xl font-bold text-slate-800 mb-5">
 
-                    title="Claims"
+                            Recent Activities
 
-                    value={dashboard.claimCount}
+                        </h2>
 
-                    color="border-red-600"
+                        <ul className="space-y-4">
 
-                    icon={<FaClipboardList className="text-red-600" />}
+                            <li className="border-b pb-3">
 
-                />
+                                📄 My Policies
 
-                <DashboardCard
+                                <span className="text-gray-500 ml-2">
 
-                    title="Premium"
+                                    — View and manage your insurance policies
 
-                    value={`₹${dashboard.totalPremium.toLocaleString()}`}
+                                </span>
 
-                    color="border-yellow-500"
+                            </li>
 
-                    icon={<FaMoneyBillWave className="text-yellow-500" />}
+                            <li className="border-b pb-3">
 
-                />
+                                💰 Premium
 
-            </div>
+                                <span className="text-gray-500 ml-2">
 
-            {/* Recent Activities */}
+                                    — Check your premium information
 
-            <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
+                                </span>
 
-                <h2 className="text-2xl font-bold text-slate-800 mb-5">
+                            </li>
 
-                    Recent Activities
+                            <li className="border-b pb-3">
 
-                </h2>
+                                🚗 My Claims
 
-                <ul className="space-y-4">
+                                <span className="text-gray-500 ml-2">
 
-                    <li className="border-b pb-3">
+                                    — Track your submitted claims
 
-                        ✅ New Customer Registered
+                                </span>
 
-                    </li>
+                            </li>
 
-                    <li className="border-b pb-3">
+                            <li>
 
-                        💰 Premium Received
+                                📁 My Documents
 
-                    </li>
+                                <span className="text-gray-500 ml-2">
 
-                    <li className="border-b pb-3">
+                                    — View your uploaded documents
 
-                        📄 Policy Approved
+                                </span>
 
-                    </li>
+                            </li>
 
-                    <li>
+                        </ul>
 
-                        🚗 Claim Request Submitted
+                    </div>
 
-                    </li>
+                </>
 
-                </ul>
+            )}
 
-            </div>
 
-            {/* Quick Actions */}
+            {/* ================================================= */}
+            {/* AGENT DASHBOARD */}
+            {/* ================================================= */}
+
+            {role === "AGENT" && (
+
+                <>
+
+                    {/* Agent Cards */}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+
+                        <DashboardCard
+                            title="Customers"
+                            value={dashboard.customerCount}
+                            color="border-blue-600"
+                            icon={
+                                <FaUsers
+                                    className="text-blue-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Policies"
+                            value={dashboard.policyCount}
+                            color="border-green-600"
+                            icon={
+                                <FaFileContract
+                                    className="text-green-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Claims"
+                            value={dashboard.claimCount}
+                            color="border-red-600"
+                            icon={
+                                <FaClipboardList
+                                    className="text-red-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Documents"
+                            value={dashboard.documentCount}
+                            color="border-purple-600"
+                            icon={
+                                <FaFolderOpen
+                                    className="text-purple-600"
+                                />
+                            }
+                        />
+
+                    </div>
+
+
+                    {/* Agent Recent Activities */}
+
+                    <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
+
+                        <h2 className="text-2xl font-bold text-slate-800 mb-5">
+
+                            Recent Activities
+
+                        </h2>
+
+                        <ul className="space-y-4">
+
+                            <li className="border-b pb-3">
+
+                                ✅ New Customer Registered
+
+                            </li>
+
+                            <li className="border-b pb-3">
+
+                                📄 New Policy Created
+
+                            </li>
+
+                            <li className="border-b pb-3">
+
+                                📁 Customer Document Uploaded
+
+                            </li>
+
+                            <li>
+
+                                🚗 Claim Submitted for Review
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </>
+
+            )}
+
+
+            {/* ================================================= */}
+            {/* ADMIN DASHBOARD */}
+            {/* ================================================= */}
+
+            {role === "ADMIN" && (
+
+                <>
+
+                    {/* Admin Cards */}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+
+                        <DashboardCard
+                            title="Customers"
+                            value={dashboard.customerCount}
+                            color="border-blue-600"
+                            icon={
+                                <FaUsers
+                                    className="text-blue-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Policies"
+                            value={dashboard.policyCount}
+                            color="border-green-600"
+                            icon={
+                                <FaFileContract
+                                    className="text-green-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Claims"
+                            value={dashboard.claimCount}
+                            color="border-red-600"
+                            icon={
+                                <FaClipboardList
+                                    className="text-red-600"
+                                />
+                            }
+                        />
+
+                        <DashboardCard
+                            title="Premium"
+                            value={`₹${dashboard.totalPremium?.toLocaleString("en-IN")}`}
+                            color="border-yellow-500"
+                            icon={
+                                <FaMoneyBillWave
+                                    className="text-yellow-500"
+                                />
+                            }
+                        />
+
+                    </div>
+
+
+                    {/* Admin Recent Activities */}
+
+                    <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
+
+                        <h2 className="text-2xl font-bold text-slate-800 mb-5">
+
+                            Recent Activities
+
+                        </h2>
+
+                        <ul className="space-y-4">
+
+                            <li className="border-b pb-3">
+
+                                ✅ New Customer Registered
+
+                            </li>
+
+                            <li className="border-b pb-3">
+
+                                💰 Premium Received
+
+                            </li>
+
+                            <li className="border-b pb-3">
+
+                                📄 Policy Approved
+
+                            </li>
+
+                            <li>
+
+                                🚗 Claim Request Submitted
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </>
+
+            )}
+
+
+            {/* ================================================= */}
+            {/* QUICK ACTIONS */}
+            {/* ================================================= */}
 
             <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
 
@@ -193,27 +437,19 @@ function Dashboard() {
 
                 <div className="flex flex-wrap gap-4">
 
-                    {
+                    {actions.map((action) => (
 
-                        actions.map((action) => (
+                        <button
+                            key={action.title}
+                            onClick={() => navigate(action.path)}
+                            className={`${action.color} text-white px-6 py-3 rounded-xl transition-all hover:opacity-90`}
+                        >
 
-                            <button
+                            {action.title}
 
-                                key={action.title}
+                        </button>
 
-                                onClick={() => navigate(action.path)}
-
-                                className={`${action.color} text-white px-6 py-3 rounded-xl transition-all hover:opacity-90`}
-
-                            >
-
-                                {action.title}
-
-                            </button>
-
-                        ))
-
-                    }
+                    ))}
 
                 </div>
 

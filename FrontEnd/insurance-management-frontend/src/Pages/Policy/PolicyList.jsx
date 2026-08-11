@@ -19,41 +19,55 @@ function PolicyList() {
 
 const [selectedPolicy, setSelectedPolicy] = useState(null);
 
+const role = localStorage.getItem("role");
+
+
+
+
   useEffect(() => {
     loadPolicies();
   }, [filter]);
+const loadPolicies = async () => {
+  try {
 
-  const loadPolicies = async () => {
-    try {
-      let response;
+    let response;
+
+    if (role === "CUSTOMER") {
+
+      response = await policyService.getMyPolicies();
+
+    } else {
 
       switch (filter) {
+
         case "ACTIVE":
           response = await policyService.getActivePolicies();
-
           break;
 
         case "EXPIRED":
           response = await policyService.getExpiredPolicies();
-
           break;
 
         case "CANCELLED":
           response = await policyService.getPoliciesByStatus("CANCELLED");
-
           break;
 
         default:
           response = await policyService.getAllPolicies();
       }
 
-      setPolicies(response);
-    } catch (error) {
-      console.log(error);
-
-      toast.error("Unable to load policies");
     }
-  };
+
+    setPolicies(response);
+
+  } catch (error) {
+
+    console.log(error);
+
+    toast.error("Unable to load policies");
+
+  }
+};
  
   const handleRenew = (policy) => {
 
@@ -197,20 +211,30 @@ const renewPolicy = async (renewData) => {
       {/* Heading */}
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Policy Management</h1>
+      <h1 className="text-3xl font-bold">
+    {role === "CUSTOMER"
+        ? "My Policies"
+        : "Policy Management"}
+</h1>
 
-        <button
-          onClick={() => navigate("/policies/add")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
-        >
-          <FaPlus />
-          Add Policy
-        </button>
+     {role !== "CUSTOMER" && (
+
+<button
+    onClick={() => navigate("/policies/add")}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
+>
+    <FaPlus />
+    Add Policy
+</button>
+
+)}
       </div>
 
       {/* Filters */}
 
-      <div className="flex gap-4 mb-8">
+{role !== "CUSTOMER" && (
+
+<div className="flex gap-4 mb-8">
         <button
           onClick={() => setFilter("ALL")}
           className={`px-5 py-2 rounded-lg transition ${
@@ -255,6 +279,7 @@ const renewPolicy = async (renewData) => {
           Cancelled
         </button>
       </div>
+)}
 
       {/* Table */}
 

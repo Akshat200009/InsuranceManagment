@@ -15,8 +15,10 @@ function Navbar() {
   const notificationRef = useRef(null);
 
   useEffect(() => {
-    loadNotifications();
-  }, []);
+    if (role === "ADMIN" || role === "AGENT") {
+        loadNotifications();
+    }
+}, [role]);
 
   const loadNotifications = async () => {
     try {

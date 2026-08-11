@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.InsuranceManagement.DTO.PolicyRenewRequest;
@@ -12,18 +13,24 @@ import com.InsuranceManagement.DTO.PolicyResponse;
 import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Entities.Policy;
 import com.InsuranceManagement.Entities.PolicyStatus;
+import com.InsuranceManagement.Entities.User;
 import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.PolicyRepository;
+import com.InsuranceManagement.Repository.UserRepository;
 
 @Service
 public class PolicyServiceImpl implements PolicyService {
 
 	private final PolicyRepository policyRepository;
 	private final CustomerRepository customerRepository;
+	private final UserRepository userRepository;
+	
 
-	public PolicyServiceImpl(PolicyRepository policyRepository, CustomerRepository customerRepository) {
+	public PolicyServiceImpl(PolicyRepository policyRepository, CustomerRepository customerRepository,
+			UserRepository userRepository) {
 		this.policyRepository = policyRepository;
 		this.customerRepository = customerRepository;
+		this.userRepository=userRepository;
 
 	}
 
@@ -42,6 +49,21 @@ public class PolicyServiceImpl implements PolicyService {
 		response.setStatus(policy.getStatus());
 
 		return response;
+	}
+	private Customer getLoggedInCustomer() {
+
+	    String email = SecurityContextHolder
+	            .getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    User user = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new RuntimeException("User not found"));
+
+	    return customerRepository.findByUser(user)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Customer not found"));
 	}
 
 	@Override
@@ -163,6 +185,63 @@ public class PolicyServiceImpl implements PolicyService {
 		            policyRepository.findByCustomerId(customerId);
 		 
 		return policies.stream().map(this::convertToResponse).toList();
+	}
+
+	@Override
+	public List<PolicyResponse> getMyPolicies() {
+
+	    String email = SecurityContextHolder
+	            .getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    Customer customer = customerRepository
+	            .findByEmail(email)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Customer not found"));
+
+	    List<Policy> policies =
+	            policyRepository.findByCustomerId(customer.getId());
+
+	    return policies.stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
+
+	@Override
+	public PolicyResponse getMyPolicy(Long policyId) {
+
+	    String email = SecurityContextHolder.getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    Customer customer = customerRepository.findByEmail(email)
+	            .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+	    Policy policy = policyRepository.findById(policyId)
+	            .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+	    if (!policy.getCustomer().getId().equals(customer.getId())) {
+	        throw new RuntimeException("Unauthorized");
+	    }
+
+	    return convertToResponse(policy);
+	}
+
+	@Override
+	public List<PolicyResponse> getMyActivePolicies() {
+
+	    Customer customer = getLoggedInCustomer();
+
+	    List<Policy> policies =
+	            policyRepository.findByCustomerIdAndStatus(
+	                    customer.getId(),
+	                    PolicyStatus.ACTIVE
+	            );
+
+	    return policies.stream()
+	            .map(this::convertToResponse)
+	            .toList();
 	}
 
 }

@@ -6,6 +6,7 @@ public class DashboardResponse {
     private Long policyCount;
     private Long claimCount;
     private Double totalPremium;
+    private Long documentCount;
 
     public DashboardResponse() {
     }
@@ -13,12 +14,14 @@ public class DashboardResponse {
     public DashboardResponse(Long customerCount,
                              Long policyCount,
                              Long claimCount,
-                             Double totalPremium) {
+                             Double totalPremium,
+                             Long documentCount) {
 
         this.customerCount = customerCount;
         this.policyCount = policyCount;
         this.claimCount = claimCount;
         this.totalPremium = totalPremium;
+        this.documentCount = documentCount;
     }
 
     public Long getCustomerCount() {
@@ -51,5 +54,13 @@ public class DashboardResponse {
 
     public void setTotalPremium(Double totalPremium) {
         this.totalPremium = totalPremium;
+    }
+
+    public Long getDocumentCount() {
+        return documentCount;
+    }
+
+    public void setDocumentCount(Long documentCount) {
+        this.documentCount = documentCount;
     }
 }

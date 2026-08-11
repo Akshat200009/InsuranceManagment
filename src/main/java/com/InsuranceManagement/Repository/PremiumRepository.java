@@ -17,6 +17,8 @@ public interface PremiumRepository extends  JpaRepository<Premium, Long> {
 
 	   List<Premium> findByPaymentStatus(PaymentStatus paymentStatus);
 	   
+	   List<Premium> findByCustomerId(Long customerId);
+	   
 	   List<Premium> findByPaymentDateBeforeAndPaymentStatus(
 		        LocalDate paymentDate,
 		        PaymentStatus paymentStatus);

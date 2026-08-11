@@ -2,26 +2,36 @@ package com.InsuranceManagement.Services;
 
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.InsuranceManagement.DTO.ClaimRequest;
 import com.InsuranceManagement.DTO.ClaimResponse;
 import com.InsuranceManagement.Entities.Claim;
 import com.InsuranceManagement.Entities.ClaimStatus;
+import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Entities.Policy;
+import com.InsuranceManagement.Entities.User;
 import com.InsuranceManagement.Repository.ClaimRepository;
+import com.InsuranceManagement.Repository.CustomerRepository;
 import com.InsuranceManagement.Repository.PolicyRepository;
+import com.InsuranceManagement.Repository.UserRepository;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
 
 	private final ClaimRepository claimRepository;
 	private final PolicyRepository policyRepository;
+	private final UserRepository userRepository;
+	private final CustomerRepository customerRepository;
 
-	public ClaimServiceImpl(ClaimRepository claimRepository, PolicyRepository policyRepository) {
+	public ClaimServiceImpl(ClaimRepository claimRepository, PolicyRepository policyRepository
+			    ,UserRepository userRepository,CustomerRepository customerRepository) {
 
 		this.claimRepository = claimRepository;
 		this.policyRepository = policyRepository;
+		this.customerRepository=customerRepository;
+		this.userRepository=userRepository;
 	}
 
 	private ClaimResponse convertToResponse(Claim claim) {
@@ -37,6 +47,22 @@ public class ClaimServiceImpl implements ClaimService {
 		response.setSubmissionDate(claim.getSubmissionDate());
 
 		return response;
+	}
+	
+	private Customer getLoggedInCustomer() {
+
+	    String email = SecurityContextHolder
+	            .getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    User user = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new RuntimeException("User not found"));
+
+	    return customerRepository.findByUser(user)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Customer not found"));
 	}
 
 	@Override
@@ -116,5 +142,41 @@ public class ClaimServiceImpl implements ClaimService {
 	    return claims.stream()
 	            .map(this::convertToResponse)
 	            .toList();
+	}
+
+	@Override
+	public List<ClaimResponse> getMyClaims() {
+
+	    Customer customer = getLoggedInCustomer();
+
+	    List<Claim> claims =
+	            claimRepository.findByPolicyCustomerId(customer.getId());
+
+	    return claims.stream()
+	            .map(this::convertToResponse)
+	            .toList();
+	}
+
+	@Override
+	public ClaimResponse getMyClaimById(Long claimId) {
+
+	    Customer customer = getLoggedInCustomer();
+
+	    Claim claim = claimRepository.findById(claimId)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Claim Not Found"));
+
+	    Long claimCustomerId =
+	            claim.getPolicy()
+	                    .getCustomer()
+	                    .getId();
+
+	    if (!claimCustomerId.equals(customer.getId())) {
+
+	        throw new RuntimeException("Access Denied");
+
+	    }
+
+	    return convertToResponse(claim);
 	}
 }

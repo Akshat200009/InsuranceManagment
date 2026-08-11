@@ -80,5 +80,14 @@ public class DocumentController {
                 documentService.getAllDocuments()
         );
     }
+    
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my")
+    public ResponseEntity<List<DocumentResponse>> getMyDocuments() {
+
+        return ResponseEntity.ok(
+                documentService.getMyDocuments()
+        );
+    }
 
 }

@@ -11,25 +11,22 @@ const getAuthHeader = () => {
 };
 
 const policyService = {
+  // ===========================
+  // ADMIN / AGENT
+  // ===========================
+
   // Get All Policies
   getAllPolicies: async () => {
-    const response = await axios.get(
-      BASE_URL,
-
-      getAuthHeader(),
-    );
-
+    const response = await axios.get(BASE_URL, getAuthHeader());
     return response.data;
   },
 
-  // Add Policy
+  // Create Policy
   createPolicy: async (policy) => {
     const response = await axios.post(
       BASE_URL,
-
       policy,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
@@ -39,8 +36,7 @@ const policyService = {
   getActivePolicies: async () => {
     const response = await axios.get(
       `${BASE_URL}/active`,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
@@ -50,19 +46,17 @@ const policyService = {
   getExpiredPolicies: async () => {
     const response = await axios.get(
       `${BASE_URL}/expired`,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
   },
 
-  // Filter by Status
+  // Policies By Status
   getPoliciesByStatus: async (status) => {
     const response = await axios.get(
       `${BASE_URL}/status?status=${status}`,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
@@ -72,10 +66,8 @@ const policyService = {
   renewPolicy: async (id, renewRequest) => {
     const response = await axios.put(
       `${BASE_URL}/${id}/renew`,
-
       renewRequest,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
@@ -85,44 +77,64 @@ const policyService = {
   cancelPolicy: async (id) => {
     const response = await axios.put(
       `${BASE_URL}/${id}/cancel`,
-
       {},
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
   },
+
   // Expiring Policies
   getExpiringPolicies: async () => {
-    const response = await axios.get(`${BASE_URL}/expiring`, getAuthHeader());
+    const response = await axios.get(
+      `${BASE_URL}/expiring`,
+      getAuthHeader()
+    );
+
     return response.data;
   },
+
   // Get Policy By Id
   getPolicyById: async (id) => {
     const response = await axios.get(
       `${BASE_URL}/${id}`,
-
-      getAuthHeader(),
+      getAuthHeader()
     );
 
     return response.data;
   },
-  // Get Customer Policies by ID
-   getCustomerPolicies: async (customerId) => {
 
-        const response = await axios.get(
+  // Get Policies By Customer (ADMIN)
+  getCustomerPolicies: async (customerId) => {
+    const response = await axios.get(
+      `${BASE_URL}/customer/${customerId}`,
+      getAuthHeader()
+    );
 
-            `${BASE_URL}/customer/${customerId}`,
+    return response.data;
+  },
 
-            getAuthHeader()
+  // ===========================
+  // CUSTOMER
+  // ===========================
 
-        );
+  // My Policies
+  getMyPolicies: async () => {
+    const response = await axios.get(
+      `${BASE_URL}/my`,
+      getAuthHeader()
+    );
 
-        return response.data;
+    return response.data;
+  },
+  getMyPolicyById: async (id) => {
+    const response = await axios.get(
+        `${BASE_URL}/my/${id}`,
+        getAuthHeader()
+    );
 
-    }
-
+    return response.data;
+},
 };
 
 export default policyService;

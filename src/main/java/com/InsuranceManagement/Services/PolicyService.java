@@ -15,6 +15,7 @@ public interface PolicyService {
     
     List<PolicyResponse> getActivePolicies();
     List<PolicyResponse> getAllPolicies();
+    List<PolicyResponse> getMyPolicies();
     
     PolicyResponse renewPolicy(Long policyId, PolicyRenewRequest request);
     
@@ -24,5 +25,7 @@ public interface PolicyService {
     
     List<PolicyResponse> getPoliciesByStatus(PolicyStatus status);
     List<PolicyResponse> getExpiringPolicies();
+    PolicyResponse getMyPolicy(Long policyId);
+    List<PolicyResponse> getMyActivePolicies();
 
 }

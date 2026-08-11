@@ -1,110 +1,108 @@
 import PolicyRow from "./PolicyRow";
 
 function PolicyTable({
-
-    policies,
-
-    onRenew,
-
-    onCancel
-
+  policies,
+  onRenew,
+  onCancel,
 }) {
 
-    return (
+  const role = localStorage.getItem("role");
 
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+  return (
 
-            <table className="w-full">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden">
 
-                <thead className="bg-slate-100">
+      <table className="w-full">
 
-                    <tr>
+        <thead className="bg-slate-100">
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            Policy No
-                        </th>
+          <tr>
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            Customer
-                        </th>
+            <th className="px-6 py-4 text-left font-semibold">
+              Policy No
+            </th>
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            Policy Type
-                        </th>
+            {
+              role !== "CUSTOMER" && (
+                <th className="px-6 py-4 text-left font-semibold">
+                  Customer
+                </th>
+              )
+            }
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            Premium
-                        </th>
+            <th className="px-6 py-4 text-left font-semibold">
+              Policy Type
+            </th>
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            Start Date
-                        </th>
+            <th className="px-6 py-4 text-left font-semibold">
+              Premium
+            </th>
 
-                        <th className="px-6 py-4 text-left font-semibold">
-                            End Date
-                        </th>
+            <th className="px-6 py-4 text-left font-semibold">
+              Start Date
+            </th>
 
-                        <th className="px-6 py-4 text-center font-semibold">
-                            Status
-                        </th>
+            <th className="px-6 py-4 text-left font-semibold">
+              End Date
+            </th>
 
-                        <th className="px-6 py-4 text-center font-semibold">
-                            Actions
-                        </th>
+            <th className="px-6 py-4 text-center font-semibold">
+              Status
+            </th>
 
-                    </tr>
+            <th className="px-6 py-4 text-center font-semibold">
+              Actions
+            </th>
 
-                </thead>
+          </tr>
 
-                <tbody>
+        </thead>
 
-                    {
+        <tbody>
 
-                        policies.length > 0 ?
+          {
+            policies.length > 0 ?
 
-                            policies.map((policy) => (
+              policies.map((policy) => (
 
-                                <PolicyRow
+                <PolicyRow
 
-                                    key={policy.id}
+                  key={policy.id}
 
-                                    policy={policy}
+                  policy={policy}
 
-                                    onRenew={onRenew}
+                  onRenew={onRenew}
 
-                                    onCancel={onCancel}
+                  onCancel={onCancel}
 
-                                />
+                />
 
-                            ))
+              ))
 
-                            :
+              :
 
-                            <tr>
+              <tr>
 
-                                <td
+                <td
+                  colSpan={role === "CUSTOMER" ? "7" : "8"}
+                  className="py-12 text-center text-gray-500"
+                >
 
-                                    colSpan="8"
+                  No Policies Found
 
-                                    className="py-12 text-center text-gray-500"
+                </td>
 
-                                >
+              </tr>
 
-                                    No Policies Found
+          }
 
-                                </td>
+        </tbody>
 
-                            </tr>
+      </table>
 
-                    }
+    </div>
 
-                </tbody>
-
-            </table>
-
-        </div>
-
-    );
+  );
 
 }
 

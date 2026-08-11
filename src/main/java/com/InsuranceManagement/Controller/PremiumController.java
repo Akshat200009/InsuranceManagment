@@ -99,5 +99,31 @@ public class PremiumController {
         );
 
     }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my")
+    public ResponseEntity<List<PremiumResponse>> getMyPremiums() {
+
+        return ResponseEntity.ok(
+                premiumService.getMyPremiums()
+        );
+    }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my/{id}")
+    public ResponseEntity<PremiumResponse> getMyPremiumById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                premiumService.getMyPremiumById(id)
+        );
+    }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @PutMapping("/my/{id}/pay")
+    public ResponseEntity<PremiumResponse> payPremium(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                premiumService.payPremium(id)
+        );
+    }
 
 }

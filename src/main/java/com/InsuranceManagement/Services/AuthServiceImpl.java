@@ -12,6 +12,9 @@ import com.InsuranceManagement.DTO.RegisterRequest;
 import com.InsuranceManagement.Entities.User;
 import com.InsuranceManagement.Repository.UserRepository;
 import com.InsuranceManagement.Security.JwtService;
+import com.InsuranceManagement.Entities.Customer;
+import com.InsuranceManagement.Entities.Role;
+import com.InsuranceManagement.Repository.CustomerRepository;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -20,11 +23,13 @@ public class AuthServiceImpl implements AuthService {
 	private final PasswordEncoder passenc;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
+	private final CustomerRepository customerRepository;
 
-	public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
+	public AuthServiceImpl(UserRepository userRepository,CustomerRepository customerRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
 			AuthenticationManager authenticationManager) {
 
 		this.userRepo = userRepository;
+		this.customerRepository = customerRepository;
 		this.passenc = passwordEncoder;
 		this.jwtService = jwtService;
 		this.authenticationManager = authenticationManager;
@@ -50,31 +55,67 @@ public class AuthServiceImpl implements AuthService {
 		user.setPhone(request.getPhone());
 		user.setRole(request.getRole());
 
-		userRepo.save(user);
+		User savedUser = userRepo.save(user);
+
+		// If Customer, also create Customer Profile
+		if (request.getRole() == Role.CUSTOMER) {
+
+		    Customer customer = new Customer();
+		    customer.setUser(savedUser);
+
+		    customer.setName(request.getFullName());
+
+		    customer.setEmail(request.getEmail());
+
+		    customer.setPhone(request.getPhone());
+
+		    customer.setAddress(request.getAddress());
+
+		    customer.setDob(request.getDob());
+
+		    customerRepository.save(customer);
+		}
 
 		return "User Registered Successfully";
 	}
-
 	@Override
 	public AuthResponse login(LoginRequest request) {
 
 	    authenticationManager.authenticate(
-
 	            new UsernamePasswordAuthenticationToken(
 	                    request.getEmail(),
-	                    request.getPassword()));
+	                    request.getPassword()
+	            )
+	    );
 
 	    User user = userRepo.findByEmail(request.getEmail())
 	            .orElseThrow(() ->
-	                    new RuntimeException("User Not Found"));
+	                    new RuntimeException("User Not Found")
+	            );
 
 	    String token = jwtService.generateToken(user.getEmail());
+
+	    Long customerId = null;
+
+	    // Only CUSTOMER has a Customer profile
+	    if (user.getRole() == Role.CUSTOMER) {
+
+	        Customer customer = customerRepository
+	                .findByUserId(user.getId())
+	                .orElseThrow(() ->
+	                        new RuntimeException("Customer profile not found")
+	                );
+
+	        customerId = customer.getId();
+	    }
 
 	    return new AuthResponse(
 	            token,
 	            user.getRole().name(),
 	            user.getFullname(),
-	            "Login Successful");
+	            customerId,
+	            "Login Successful"
+	    );
 	}
 
 }

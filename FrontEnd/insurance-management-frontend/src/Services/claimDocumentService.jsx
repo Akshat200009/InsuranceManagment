@@ -1,59 +1,67 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8090/api/claim-documents";
+const BASE_URL =
+    "http://localhost:8090/api/claim-documents";
 
-const getAuthHeader = () => {
-  return {
+const getAuthHeader = () => ({
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization:
+            `Bearer ${localStorage.getItem("token")}`,
     },
-  };
-};
+});
 
 const claimDocumentService = {
-  uploadDocument: async (claimId, file) => {
-    const formData = new FormData();
 
-    formData.append("file", file);
+    // ===============================
+    // UPLOAD DOCUMENT
+    // ===============================
 
-    const response = await axios.post(
-      `${BASE_URL}/upload/${claimId}`,
+    uploadDocument: async (claimId, file) => {
 
-      formData,
+        const formData = new FormData();
 
-      {
-        ...getAuthHeader(),
+        formData.append("file", file);
 
-        headers: {
-          ...getAuthHeader().headers,
+        const response = await axios.post(
+            `${BASE_URL}/upload/${claimId}`,
+            formData,
+            getAuthHeader()
+        );
 
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
+        return response.data;
+    },
 
-    return response.data;
-  },
-  getClaimDocuments: async (claimId) => {
-    const response = await axios.get(
-      `${BASE_URL}/${claimId}`,
 
-      getAuthHeader(),
-    );
+    // ===============================
+    // GET CLAIM DOCUMENTS
+    // ===============================
 
-    return response.data;
-  },
+    getClaimDocuments: async (claimId) => {
 
-  downloadDocument: async (documentId) => {
-    return await axios.get(
-      `${BASE_URL}/download/${documentId}`,
+        const response = await axios.get(
+            `${BASE_URL}/${claimId}`,
+            getAuthHeader()
+        );
 
-      {
-        ...getAuthHeader(),
-        responseType: "blob",
-      },
-    );
-  },
+        return response.data;
+    },
+
+
+    // ===============================
+    // DOWNLOAD / VIEW DOCUMENT
+    // ===============================
+
+    downloadDocument: async (documentId) => {
+
+        return await axios.get(
+            `${BASE_URL}/download/${documentId}`,
+            {
+                ...getAuthHeader(),
+                responseType: "blob",
+            }
+        );
+    },
+
 };
 
 export default claimDocumentService;

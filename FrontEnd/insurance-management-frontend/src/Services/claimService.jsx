@@ -2,108 +2,142 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8090/api/claims";
 
-const getAuthHeader = () => {
-  return {
+const getAuthHeader = () => ({
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-  };
-};
+});
 
 const claimService = {
-  // Submit Claim
-  submitClaim: async (claim) => {
-    const response = await axios.post(
-      BASE_URL,
 
-      claim,
+    // =====================================================
+    // CUSTOMER
+    // =====================================================
 
-      getAuthHeader(),
-    );
+    // Submit Claim
+    submitClaim: async (claim) => {
 
-    return response.data;
-  },
+        const response = await axios.post(
+            BASE_URL,
+            claim,
+            getAuthHeader()
+        );
 
-  // Pending Claims
-  getPendingClaims: async () => {
-    const response = await axios.get(
-      `${BASE_URL}/pending`,
+        return response.data;
+    },
 
-      getAuthHeader(),
-    );
+    // Get Logged-in Customer's Claims
+    getMyClaims: async () => {
 
-    return response.data;
-  },
+        const response = await axios.get(
+            `${BASE_URL}/my`,
+            getAuthHeader()
+        );
 
-  // Approve Claim
-  approveClaim: async (id) => {
-    const response = await axios.put(
-      `${BASE_URL}/${id}/approve`,
+        return response.data;
+    },
 
-      {},
+    // Get Logged-in Customer's Claim By ID
+    getMyClaimById: async (id) => {
 
-      getAuthHeader(),
-    );
+        const response = await axios.get(
+            `${BASE_URL}/my/${id}`,
+            getAuthHeader()
+        );
 
-    return response.data;
-  },
+        return response.data;
+    },
 
-  // Reject Claim
-  rejectClaim: async (id) => {
-    const response = await axios.put(
-      `${BASE_URL}/${id}/reject`,
 
-      {},
+    // =====================================================
+    // ADMIN / AGENT
+    // =====================================================
 
-      getAuthHeader(),
-    );
+    // Get Pending Claims
+    getPendingClaims: async () => {
 
-    return response.data;
-  },
+        const response = await axios.get(
+            `${BASE_URL}/pending`,
+            getAuthHeader()
+        );
 
-  // Claim History
-  getClaimHistory: async (policyId) => {
-    const response = await axios.put(
-      `${BASE_URL}/history/${policyId}`,
+        return response.data;
+    },
 
-      {},
+    // Approve Claim
+    approveClaim: async (id) => {
 
-      getAuthHeader(),
-    );
+        const response = await axios.put(
+            `${BASE_URL}/${id}/approve`,
+            {},
+            getAuthHeader()
+        );
 
-    return response.data;
-  },
+        return response.data;
+    },
 
-  // Filter By Status
-  getClaimsByStatus: async (status) => {
-    const response = await axios.get(
-      `${BASE_URL}/status?status=${status}`,
+    // Reject Claim
+    rejectClaim: async (id) => {
 
-      getAuthHeader(),
-    );
+        const response = await axios.put(
+            `${BASE_URL}/${id}/reject`,
+            {},
+            getAuthHeader()
+        );
 
-    return response.data;
-  },
-  // Get Claim By Id
-  getClaimById: async (id) => {
-    const response = await axios.get(
-      `${BASE_URL}/${id}`,
+        return response.data;
+    },
 
-      getAuthHeader(),
-    );
+    // Claim History By Policy
+    getClaimHistory: async (policyId) => {
 
-    return response.data;
-  },
-  // Customer Claims
-  getCustomerClaims: async (customerId) => {
-    const response = await axios.get(
-      `${BASE_URL}/customer/${customerId}`,
+        const response = await axios.put(
+            `${BASE_URL}/history/${policyId}`,
+            {},
+            getAuthHeader()
+        );
 
-      getAuthHeader(),
-    );
+        return response.data;
+    },
 
-    return response.data;
-  },
+    // Filter Claims By Status
+    getClaimsByStatus: async (status) => {
+
+        const response = await axios.get(
+            `${BASE_URL}/status`,
+            {
+                ...getAuthHeader(),
+                params: {
+                    status: status,
+                },
+            }
+        );
+
+        return response.data;
+    },
+
+    // Get Claim By ID - Admin / Agent
+    getClaimById: async (id) => {
+
+        const response = await axios.get(
+            `${BASE_URL}/${id}`,
+            getAuthHeader()
+        );
+
+        return response.data;
+    },
+
+    // Get Claims Of Specific Customer - Admin / Agent
+    getCustomerClaims: async (customerId) => {
+
+        const response = await axios.get(
+            `${BASE_URL}/customer/${customerId}`,
+            getAuthHeader()
+        );
+
+        return response.data;
+    },
+
 };
 
 export default claimService;
