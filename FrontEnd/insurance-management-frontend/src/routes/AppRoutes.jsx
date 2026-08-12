@@ -20,6 +20,10 @@ import PremiumList from "../Pages/Premium/PremiumList";
 import AddPremium from "../Pages/Premium/AddPremium";
 import PremiumDetails from "../Pages/Premium/PremiumDetails";
 import ReportsDashboard from "../Pages/Reports/ReportsDashboard";
+import EmployeeList from "../Pages/Employees/EmployeeList";
+import AddEmployee from "../Pages/Employees/AddEmployee";
+import EmployeeDetails from "../Pages/Employees/EmployeeDetails";
+import EditEmployee from "../Pages/Employees/EditEmployee";
 
 function AppRoutes() {
   return (
@@ -97,7 +101,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/policies/:id" element={ <DashboardLayout><PolicyDetails /></DashboardLayout>} />
+      <Route
+        path="/policies/:id"
+        element={
+          <DashboardLayout>
+            <PolicyDetails />
+          </DashboardLayout>
+        }
+      />
 
       <Route path="/claims" element={<ClaimList />} />
 
@@ -120,7 +131,15 @@ function AppRoutes() {
 
       <Route path="/premiums/:id" element={<PremiumDetails />} />
 
-      <Route path="/reports" element={<ReportsDashboard />}/>
+      <Route path="/reports" element={<ReportsDashboard />} />
+
+      <Route path="/employees" element={<EmployeeList />} />
+
+      <Route path="/employees/add" element={<AddEmployee />} />
+
+      <Route path="/employees/:id" element={<EmployeeDetails />} />
+
+      <Route path="/employees/edit/:id" element={<EditEmployee />} />
 
     </Routes>
   );

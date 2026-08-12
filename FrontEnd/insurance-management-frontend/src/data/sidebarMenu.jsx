@@ -5,7 +5,8 @@ import {
     FaMoneyBillWave,
     FaClipboardList,
     FaFolderOpen,
-    FaChartBar
+    FaChartBar,
+    FaUserTie
 } from "react-icons/fa";
 
 export const sidebarMenu = {
@@ -22,6 +23,12 @@ export const sidebarMenu = {
             title: "Customers",
             path: "/customers",
             icon: <FaUsers />
+        },
+
+        {
+            title: "Employees",
+            path: "/employees",
+            icon: <FaUserTie />
         },
 
         {
