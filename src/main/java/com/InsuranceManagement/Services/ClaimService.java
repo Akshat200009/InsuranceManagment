@@ -25,6 +25,10 @@ public interface ClaimService {
 
 	ClaimResponse getMyClaimById(Long claimId);
 	
+	ClaimResponse assignClaim(Long claimId, Long agentId);
+
+	List<ClaimResponse> getMyAssignedClaims();
+	
 	
 	
 }

@@ -48,8 +48,16 @@ const userService = {
    {
     const response = await axios.delete(`${BASE_URL}/employees/${id}`,getAuthHeader());
     response.data;
-   }
- 
+   },
+    getAllAgents: async () => {
+
+    const response = await axios.get(
+        `${BASE_URL}/employees`,
+        getAuthHeader()
+    );
+
+    return response.data;
+},
 }
 
 export default userService;

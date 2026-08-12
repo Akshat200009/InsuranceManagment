@@ -6,7 +6,8 @@ import {
     FaClipboardList,
     FaFolderOpen,
     FaChartBar,
-    FaUserTie
+    FaUserTie,
+    FaCog
 } from "react-icons/fa";
 
 export const sidebarMenu = {
@@ -59,7 +60,12 @@ export const sidebarMenu = {
             title: "Reports",
             path: "/reports",
             icon: <FaChartBar />
-        }
+        },
+        {
+           title: "Settings",
+           path: "/settings",
+           icon: <FaCog />
+}
 
     ],
 

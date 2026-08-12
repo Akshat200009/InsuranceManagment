@@ -137,6 +137,35 @@ const claimService = {
 
         return response.data;
     },
+    // =====================================================
+// ADMIN - ASSIGN CLAIM
+// =====================================================
+
+assignClaim: async (claimId, agentId) => {
+
+    const response = await axios.put(
+        `${BASE_URL}/${claimId}/assign/${agentId}`,
+        {},
+        getAuthHeader()
+    );
+
+    return response.data;
+},
+
+
+// =====================================================
+// AGENT - MY ASSIGNED CLAIMS
+// =====================================================
+
+getMyAssignedClaims: async () => {
+
+    const response = await axios.get(
+        `${BASE_URL}/my-assigned`,
+        getAuthHeader()
+    );
+
+    return response.data;
+},
 
 };
 

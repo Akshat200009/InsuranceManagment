@@ -11,6 +11,7 @@ import com.InsuranceManagement.Entities.Claim;
 import com.InsuranceManagement.Entities.ClaimStatus;
 import com.InsuranceManagement.Entities.Customer;
 import com.InsuranceManagement.Entities.Policy;
+import com.InsuranceManagement.Entities.Role;
 import com.InsuranceManagement.Entities.User;
 import com.InsuranceManagement.Repository.ClaimRepository;
 import com.InsuranceManagement.Repository.CustomerRepository;
@@ -45,6 +46,16 @@ public class ClaimServiceImpl implements ClaimService {
 		response.setReason(claim.getReason());
 		response.setStatus(claim.getStatus());
 		response.setSubmissionDate(claim.getSubmissionDate());
+		if (claim.getAssignedAgent() != null) {
+
+		    response.setAssignedAgentId(
+		            claim.getAssignedAgent().getId()
+		    );
+
+		    response.setAssignedAgentName(
+		            claim.getAssignedAgent().getFullname()
+		    );
+		}
 
 		return response;
 	}
@@ -178,5 +189,53 @@ public class ClaimServiceImpl implements ClaimService {
 	    }
 
 	    return convertToResponse(claim);
+	}
+
+	@Override
+	public ClaimResponse assignClaim(Long claimId, Long agentId) {
+
+	    Claim claim = claimRepository.findById(claimId)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Claim Not Found"));
+
+	    if (claim.getStatus() != ClaimStatus.PENDING) {
+
+	        throw new RuntimeException(
+	                "Only pending claims can be assigned"
+	        );
+	    }
+
+	    User agent = userRepository
+	            .findByIdAndRole(agentId, Role.AGENT)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Agent not found"));
+
+	    claim.setAssignedAgent(agent);
+
+	    Claim updatedClaim =
+	            claimRepository.save(claim);
+
+	    return convertToResponse(updatedClaim);
+	}
+
+	@Override
+	public List<ClaimResponse> getMyAssignedClaims() {
+
+	    String email = SecurityContextHolder
+	            .getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    User agent = userRepository
+	            .findByEmail(email)
+	            .orElseThrow(() ->
+	                    new RuntimeException("User not found"));
+
+	    List<Claim> claims =
+	            claimRepository.findByAssignedAgentId(agent.getId());
+
+	    return claims.stream()
+	            .map(this::convertToResponse)
+	            .toList();
 	}
 }

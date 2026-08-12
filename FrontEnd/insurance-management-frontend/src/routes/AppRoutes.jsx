@@ -24,6 +24,7 @@ import EmployeeList from "../Pages/Employees/EmployeeList";
 import AddEmployee from "../Pages/Employees/AddEmployee";
 import EmployeeDetails from "../Pages/Employees/EmployeeDetails";
 import EditEmployee from "../Pages/Employees/EditEmployee";
+import SystemSettings from "../Pages/Settings/SystemSettings";
 
 function AppRoutes() {
   return (
@@ -140,7 +141,8 @@ function AppRoutes() {
       <Route path="/employees/:id" element={<EmployeeDetails />} />
 
       <Route path="/employees/edit/:id" element={<EditEmployee />} />
-
+      
+      <Route path="/settings" element={<SystemSettings />} />
     </Routes>
   );
 }

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaUserPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 
 import DashboardLayout from "../../Layouts/DashboardLayout";
 import claimService from "../../Services/claimService";
 import ClaimTable from "../../Components/claim/ClaimTable";
+import userService from "../../Services/userService";
 
 function ClaimList() {
   const navigate = useNavigate();
@@ -15,12 +16,18 @@ function ClaimList() {
 
   const [filter, setFilter] = useState("PENDING");
 
+  const [agents, setAgents] = useState([]);
+
   const role = localStorage.getItem("role");
 
   const isCustomer = role === "CUSTOMER";
 
   useEffect(() => {
     loadClaims();
+
+    if (role === "ADMIN") {
+      loadAgents();
+    }
   }, [filter, role]);
 
   const loadClaims = async () => {
@@ -33,7 +40,12 @@ function ClaimList() {
         response = await claimService.getMyClaims();
       }
 
-      // ================= ADMIN / AGENT =================
+      // ================= AGENT =================
+      else if (role === "AGENT") {
+        response = await claimService.getMyAssignedClaims();
+      }
+
+      // ================= ADMIN =================
       else {
         switch (filter) {
           case "APPROVED":
@@ -55,7 +67,19 @@ function ClaimList() {
     } catch (error) {
       console.log(error);
 
-      toast.error("Unable to load claims");
+      toast.error(error.response?.data?.message || "Unable to load claims");
+    }
+  };
+
+  const loadAgents = async () => {
+    try {
+      const response = await userService.getAllAgents();
+
+      setAgents(response);
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Unable to load agents");
     }
   };
 
@@ -95,9 +119,13 @@ function ClaimList() {
     try {
       const updatedClaim = await claimService.approveClaim(claim.id);
 
-      setClaims((prev) =>
-        prev.map((c) => (c.id === updatedClaim.id ? updatedClaim : c)),
-      );
+      if (role === "AGENT") {
+        setClaims((prev) => prev.filter((c) => c.id !== updatedClaim.id));
+      } else {
+        setClaims((prev) =>
+          prev.map((c) => (c.id === updatedClaim.id ? updatedClaim : c)),
+        );
+      }
 
       Swal.fire({
         icon: "success",
@@ -157,11 +185,25 @@ function ClaimList() {
     }
 
     try {
-      const updatedClaim = await claimService.rejectClaim(claim.id);
+     const updatedClaim = await claimService.rejectClaim(claim.id);
 
-      setClaims((prev) =>
-        prev.map((c) => (c.id === updatedClaim.id ? updatedClaim : c)),
-      );
+if (role === "AGENT") {
+
+    setClaims((prev) =>
+        prev.filter((c) => c.id !== updatedClaim.id)
+    );
+
+} else {
+
+    setClaims((prev) =>
+        prev.map((c) =>
+            c.id === updatedClaim.id
+                ? updatedClaim
+                : c
+        )
+    );
+
+}
 
       Swal.fire({
         icon: "success",
@@ -187,6 +229,93 @@ function ClaimList() {
     }
   };
 
+  const handleAssign = async (claim) => {
+    if (!agents.length) {
+      toast.error("No agents available");
+
+      return;
+    }
+
+    const options = agents.reduce((acc, agent) => {
+      acc[agent.id] = `${agent.fullname} - ${agent.email}`;
+
+      return acc;
+    }, {});
+
+    const result = await Swal.fire({
+      title: "Assign Claim",
+
+      html: `
+            <p class="mb-4 text-gray-600">
+                Assign claim for
+                <br>
+                <b>${claim.policyNumber}</b>
+            </p>
+        `,
+
+      input: "select",
+
+      inputOptions: options,
+
+      inputPlaceholder: "Select Agent",
+
+      showCancelButton: true,
+
+      confirmButtonText: "Assign Claim",
+
+      cancelButtonText: "Cancel",
+
+      confirmButtonColor: "#2563eb",
+
+      cancelButtonColor: "#6b7280",
+
+      reverseButtons: true,
+
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please select an agent";
+        }
+      },
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      const updatedClaim = await claimService.assignClaim(
+        claim.id,
+        result.value,
+      );
+
+      setClaims((prev) =>
+        prev.map((c) => (c.id === updatedClaim.id ? updatedClaim : c)),
+      );
+
+      Swal.fire({
+        icon: "success",
+
+        title: "Claim Assigned",
+
+        text: `${updatedClaim.assignedAgentName || "Agent"} assigned successfully.`,
+
+        timer: 1500,
+
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.log(error);
+
+      Swal.fire({
+        icon: "error",
+
+        title: "Assignment Failed",
+
+        text: error.response?.data?.message || "Unable to assign claim",
+      });
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="p-8">
@@ -205,7 +334,6 @@ function ClaimList() {
             )}
           </div>
 
-
           {/* Customer can submit claim */}
 
           {isCustomer && (
@@ -221,7 +349,7 @@ function ClaimList() {
 
         {/* ================= ADMIN / AGENT FILTERS ================= */}
 
-        {!isCustomer && (
+        {role === "ADMIN" && (
           <div className="flex gap-4 mb-8">
             <button
               onClick={() => setFilter("PENDING")}
@@ -257,13 +385,22 @@ function ClaimList() {
             </button>
           </div>
         )}
+        {role === "AGENT" && (
+          <div className="mb-8">
+            <button className="bg-yellow-500 text-white px-5 py-2 rounded-lg">
+             Assigned Claims
+            </button>
+          </div>
+        )}
 
         {/* ================= TABLE ================= */}
 
         <ClaimTable
           claims={claims}
-          onApprove={isCustomer ? undefined : handleApprove}
-          onReject={isCustomer ? undefined : handleReject}
+          onApprove={role === "AGENT" ? handleApprove : undefined}
+          onReject={role === "AGENT" ? handleReject : undefined}
+          onAssign={role === "ADMIN" ? handleAssign : undefined}
+          isAdmin={role === "ADMIN"}
         />
 
         {/* ================= COUNT ================= */}

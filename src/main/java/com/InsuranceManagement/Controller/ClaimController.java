@@ -161,5 +161,25 @@ public class ClaimController {
                 claimService.getCustomerClaims(customerId)
         );
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{claimId}/assign/{agentId}")
+    public ResponseEntity<ClaimResponse> assignClaim(
+            @PathVariable Long claimId,
+            @PathVariable Long agentId) {
+
+        return ResponseEntity.ok(
+                claimService.assignClaim(claimId, agentId)
+        );
+    }
+    
+    @PreAuthorize("hasRole('AGENT')")
+    @GetMapping("/my-assigned")
+    public ResponseEntity<List<ClaimResponse>> getMyAssignedClaims() {
+
+        return ResponseEntity.ok(
+                claimService.getMyAssignedClaims()
+        );
+    }
+    
 
 }

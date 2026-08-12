@@ -13,13 +13,17 @@ public class ClaimResponse {
 	private String reason;
 	private ClaimStatus status;
 	private LocalDate submissionDate;
+	private Long assignedAgentId;
+	private String assignedAgentName;
 
 	public ClaimResponse() {
 	}
 
-	public ClaimResponse(Long id, Long policyId, String policyNumber, Double claimAmount, String reason,
-			ClaimStatus status, LocalDate submissionDate) {
+	
 
+	public ClaimResponse(Long id, Long policyId, String policyNumber, Double claimAmount, String reason,
+			ClaimStatus status, LocalDate submissionDate, Long assignedAgentId, String assignedAgentName) {
+		super();
 		this.id = id;
 		this.policyId = policyId;
 		this.policyNumber = policyNumber;
@@ -27,7 +31,11 @@ public class ClaimResponse {
 		this.reason = reason;
 		this.status = status;
 		this.submissionDate = submissionDate;
+		this.assignedAgentId = assignedAgentId;
+		this.assignedAgentName = assignedAgentName;
 	}
+
+
 
 	public Long getId() {
 		return id;
@@ -84,4 +92,21 @@ public class ClaimResponse {
 	public void setSubmissionDate(LocalDate submissionDate) {
 		this.submissionDate = submissionDate;
 	}
+
+	public Long getAssignedAgentId() {
+		return assignedAgentId;
+	}
+
+	public void setAssignedAgentId(Long assignedAgentId) {
+		this.assignedAgentId = assignedAgentId;
+	}
+
+	public String getAssignedAgentName() {
+		return assignedAgentName;
+	}
+
+	public void setAssignedAgentName(String assignedAgentName) {
+		this.assignedAgentName = assignedAgentName;
+	}
+	
 }

@@ -28,23 +28,31 @@ public class Claim {
 
     @Column(nullable = false)
     private LocalDate submissionDate;
+    
+    @ManyToOne
+    @JoinColumn(name = "assigned_agent_id")
+    private User assignedAgent;
 
     public Claim() {
     }
 
-    public Claim(Long id, Policy policy, Double claimAmount,
-                 String reason, ClaimStatus status,
-                 LocalDate submissionDate) {
+   
 
-        this.id = id;
-        this.policy = policy;
-        this.claimAmount = claimAmount;
-        this.reason = reason;
-        this.status = status;
-        this.submissionDate = submissionDate;
-    }
+    public Claim(Long id, Policy policy, Double claimAmount, String reason, ClaimStatus status,
+			LocalDate submissionDate, User assignedAgent) {
+		super();
+		this.id = id;
+		this.policy = policy;
+		this.claimAmount = claimAmount;
+		this.reason = reason;
+		this.status = status;
+		this.submissionDate = submissionDate;
+		this.assignedAgent = assignedAgent;
+	}
 
-    public Long getId() {
+
+
+	public Long getId() {
         return id;
     }
 
@@ -91,4 +99,13 @@ public class Claim {
     public void setSubmissionDate(LocalDate submissionDate) {
         this.submissionDate = submissionDate;
     }
+
+	public User getAssignedAgent() {
+		return assignedAgent;
+	}
+
+	public void setAssignedAgent(User assignedAgent) {
+		this.assignedAgent = assignedAgent;
+	}
+    
 }
