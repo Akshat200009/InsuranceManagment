@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8090/api/dashboard";
+const BASE_URL = "https://insurancemanagment.onrender.com/api/dashboard";
 
 const getAuthHeader = () => {
   return {

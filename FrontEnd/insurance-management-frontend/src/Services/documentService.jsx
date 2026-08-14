@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8090/api/documents";
+const BASE_URL = "https://insurancemanagment.onrender.com/api/documents";
 
 const getAuthHeader = () => ({
   headers: {
